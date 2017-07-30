@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import RPT from 'prop-types';
 import { connect } from 'react-redux';
+import ImageFilter from '../ui/imageFilter';
 import Loader from '../elements/loader';
 import Pagination from './pagination';
 import { actions, selectors } from '../../store';
 
-const mapStateToProps = (state) => {
-  const { data, isPending } = selectors.api.pictures(state);
+const mapStateToProps = (state, { params }) => {
+  const { data, isPending } = selectors.api.pictures(state, params);
   return {
     pictures: data,
     isPending,
@@ -29,13 +30,15 @@ class PicturesContainer extends Component {
   }
 
   componentWillReceiveProps(props) {
-    if (props.params.page !== this.props.params.page) {
+    const isDifferentPage = props.params.page !== this.props.params.page;
+    const isDifferentType = props.params.type !== this.props.params.type;
+   if (isDifferentPage || isDifferentType) {
       this.fetch(props);
     }
   }
 
   fetch(props) {
-    const { params, fetch } = props;
+    const { params, fetch } = props || this.props;
     fetch(params);
   }
 
@@ -48,6 +51,7 @@ class PicturesContainer extends Component {
 
     return (
       <div>
+        <ImageFilter />
         <Pagination {...pictures.meta} />
         {'coming soon...'}
       </div>

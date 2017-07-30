@@ -1,21 +1,22 @@
 import React from 'react';
+import RPT from 'prop-types';
+import { parse } from 'query-string';
 import { withRouter } from 'react-router-dom';
 import Button from '../../elements/button';
 import styles from './style.sass';
-import qs from 'query-string';
+import { processURL } from '../../../utils/urls';
 
 const PaginationElement = ({ history, location, offset, page_size: pageSize, total }) => {
   const numberOfPages = Math.ceil(total / pageSize);
   const currentPage = offset / pageSize;
+  const currentQueryParams = parse(location.search);
 
   function changePage(page) {
-    history.replace({
-      pathname: location.pathname,
-      query: {
-        ...location.query,
-        page,
-      },
+    const newURL = processURL(location.pathname, {
+      ...currentQueryParams,
+      page,
     });
+    history.replace(newURL);
   }
 
   const buttons = [];
@@ -33,6 +34,19 @@ const PaginationElement = ({ history, location, offset, page_size: pageSize, tot
       {buttons}
     </div>
   );
+};
+
+PaginationElement.propTypes = {
+  history: RPT.shape({
+    replace: RPT.func,
+  }),
+  location: RPT.shape({
+    pathname: RPT.string,
+    search: RPT.string,
+  }),
+  offset: RPT.number,
+  page_size: RPT.number,
+  total: RPT.number,
 };
 
 export default withRouter(PaginationElement);
