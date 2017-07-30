@@ -1,0 +1,32 @@
+body
+  margin: 0
+  padding: 0
+  color: #515151
+  background-color: #fff
+
+a
+  position: relative
+  color: #515151
+  display: inline-block
+  text-decoration: none
+  opacity: .75
+
+  &:after
+    content: ""
+    position: absolute
+    display: block
+    bottom: 0
+    left: 0
+    right: 0
+    height: 1px
+    background-color: #515151
+    opacity: 0.1
+
+  &:hover
+    opacity: 1
+
+    &:after
+      opacity: .25
+
+*
+  box-sizing: border-box
