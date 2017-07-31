@@ -8,9 +8,11 @@ import PrivateRoute from './auth';
 import Home from '../components/pages/home';
 import Login from '../components/pages/login';
 import Pictures from '../components/pages/images';
+import Picture from '../components/pages/picture';
 import Articles from '../components/pages/articles';
 import Article from '../components/pages/article';
 import NoMatch from '../components/pages/page404';
+import Bulk from '../components/pages/bulk';
 
 export const Component = () => (
   <Router history={history}>
@@ -18,8 +20,10 @@ export const Component = () => (
       <Switch>
         <PrivateRoute path={routes.home} exact component={Home} />
         <PrivateRoute path={routes.pictures} exact component={Pictures} />
+        <PrivateRoute path={routes.picture} exact component={Picture} />
         <PrivateRoute path={routes.articles} exact component={Articles} />
         <PrivateRoute path={routes.article} exact component={Article} />
+        <PrivateRoute path={routes.bulk} exact component={Bulk} />
         <Route path={routes.login} exact component={Login} />
         <Route component={NoMatch} />
       </Switch>

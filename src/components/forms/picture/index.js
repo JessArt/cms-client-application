@@ -23,7 +23,7 @@ const mapDispatchToProps = {
 
 const PictureForm = ({ picture, small, save, isPending }) => {
   const submitButton = (
-    <Button type={'submit'}>
+    <Button loading={isPending} type={'submit'}>
       {'Save picture'}
     </Button>
   );
@@ -35,9 +35,12 @@ const PictureForm = ({ picture, small, save, isPending }) => {
   );
 
   const submitFn = form => save(form, picture);
-  
+
   return (
     <Form onSubmit={submitFn}>
+      {small &&
+        <img src={picture.url} />
+      }
       <Input label={'Title'} type={'text'} name={'title'} defaultValue={picture.title} />
       <Select name={'type'}>
         <Option id={'photo'}>
@@ -56,9 +59,7 @@ const PictureForm = ({ picture, small, save, isPending }) => {
           Other (will not appear anywhere)
         </Option>
       </Select>
-      <Editor name={'description'} label={'Description'}>
-        {picture.description}
-      </Editor>
+      <Editor name={'description'} label={'Description'} html={picture.description} />
       <Input
         label={'Meta description'}
         hint={'For SEO. Should be an engaging sentence, with at maximum 150 symbols (more important words first). Will appear as the second line when share.'}

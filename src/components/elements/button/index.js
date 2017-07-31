@@ -3,7 +3,7 @@ import RPT from 'prop-types';
 import { Link } from 'react-router-dom';
 import styles from './style.sass';
 
-const ButtonElement = ({ to, type, children, className, loading, ...props }) => {
+const ButtonElement = ({ to, type, children, className = '', loading, ...props }) => {
   let Element = 'div';
   const buttonProps = {
     ...props,
@@ -28,7 +28,7 @@ const ButtonElement = ({ to, type, children, className, loading, ...props }) => 
   }
 
   return (
-    <Element className={`styles.button ${className || ''}`} {...buttonProps}>
+    <Element className={`${styles.button} ${className || ''}`} {...buttonProps}>
       {loading ? 'processing...' : children}
     </Element>
   );
@@ -40,6 +40,7 @@ ButtonElement.propTypes = {
   props: RPT.any,
   loading: RPT.bool,
   to: RPT.string,
+  className: RPT.string,
 };
 
 ButtonElement.defaultProps = {

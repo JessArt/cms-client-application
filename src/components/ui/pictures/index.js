@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import RPT from 'prop-types';
 import { connect } from 'react-redux';
-import ImageFilter from '../ui/imageFilter';
-import Loader from '../elements/loader';
-import Pagination from './pagination';
-import { actions, selectors } from '../../store';
+import ImageFilter from '../../ui/imageFilter';
+import Loader from '../../elements/loader';
+import Pagination from '../pagination';
+import Picture from '../picture';
+import { actions, selectors } from '../../../store';
+import styles from './style.sass';
 
 const mapStateToProps = (state, { params }) => {
   const { data, isPending } = selectors.api.pictures(state, params);
@@ -49,11 +51,21 @@ class PicturesContainer extends Component {
       return <Loader />;
     }
 
+    const picturesList = pictures
+      .data
+      .map(picture => (
+        <div className={styles.picture}>
+          <Picture key={picture.id} picture={picture} />
+        </div>
+      ));
+
     return (
       <div>
         <ImageFilter />
         <Pagination {...pictures.meta} />
-        {'coming soon...'}
+        <div className={styles.pictures}>
+          {picturesList}
+        </div>
       </div>
     );
   }
