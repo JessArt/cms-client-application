@@ -33,6 +33,9 @@ const ArticleForm = ({ article, saveArticle, isPending }) => {
   const submitFn = form => saveArticle({ form, id });
   return (
     <Form onSubmit={submitFn}>
+      {id &&
+        <Input type={'hidden'} defaultValue={id} />
+      }
       <Input label={'Title'} name={'title'} type={'text'} defaultValue={title} />
       <Input label={'Subtitle'} name={'subtitle'} type={'text'} defaultValue={subtitle} />
       <Input

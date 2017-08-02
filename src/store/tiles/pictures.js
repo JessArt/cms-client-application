@@ -10,7 +10,7 @@ export const picture = createTile({
 
 export const pictures = createTile({
   type: ['api', 'pictures'],
-  fn: ({ api, params }) => api.get('/v3/api/images', { type: params.type, pageNumber: params.page }),
+  fn: ({ api, params }) => api.get('/v3/api/images', { type: params.type, pageNumber: params.page, pageSize: 30 }),
   nesting: ({ type = DEFAULT_IMAGE_TYPE, page = 0 }) => [type, page],
 });
 
@@ -23,8 +23,19 @@ const getPictureId = ({ id, fakeId }) => id || fakeId || 'default';
 
 export const savePicture = createTile({
   type: ['api', 'savePicture'],
-  fn: ({ api, params }) => {
-    return api.post('/image', params);
+  fn: async ({ api, params, dispatch, actions }) => {
+    try {
+      const promise = await api.post('/image', params);
+      dispatch(actions.ui.notifications.add({
+        id: 'save_picture',
+      }));
+      return promise;
+    } catch (e) {
+      dispatch(actions.ui.notifications.add({
+        id: 'save_picture',
+      }));
+      throw new Error(e);
+    }
   },
   nesting: image => [getPictureId(image)],
 });

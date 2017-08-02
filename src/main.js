@@ -2,6 +2,7 @@ import { AppContainer } from 'react-hot-loader';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
+import 'react-select/dist/react-select.css';
 import { Component as App } from './routing';
 import { store } from './store';
 import './styles/base.sass';

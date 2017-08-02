@@ -5,11 +5,17 @@ import Button from '../../elements/button';
 import BulkChoosing from '../../ui/bulkChoosing';
 import BulkUploading from '../../ui/bulkUploading';
 import FixedControls from '../../ui/fixedControls';
-import { selectors } from '../../../store';
+import Loader from '../../elements/loader';
+import { actions, selectors } from '../../../store';
 
 const mapStateToProps = state => ({
+  isTagsPending: selectors.api.tags(state).isPending,
   images: selectors.bulk.choosing(state).data,
 });
+
+const mapDispatchToProps = {
+  fetchTags: actions.api.tags,
+};
 
 class BulkPage extends Component {
   state = {
@@ -23,6 +29,10 @@ class BulkPage extends Component {
         ...image,
       };
     }),
+  }
+
+  componentDidMount() {
+    this.props.fetchTags();
   }
 
   toggleImage = (id) => {
@@ -42,6 +52,20 @@ class BulkPage extends Component {
       images: this.state.images.filter(image => image.selected === true),
       state: 'uploading',
     });
+  }
+
+  uploadImages = () => {
+    const forms = document.querySelectorAll('form[name="pictureForm"]');
+    console.log('aaa')
+
+    if (forms) {
+      const numberOfForms = forms.length;
+
+      for (let i = 0; i < numberOfForms; i++) {
+        const form = forms[i];
+        form.dispatchEvent(new Event('submit'));
+      }
+    }
   }
 
   renderChoosing() {
@@ -64,7 +88,7 @@ class BulkPage extends Component {
       <div>
         <BulkUploading images={images} />
         <FixedControls>
-          <Button onClick={this.filterImages}>
+          <Button onClick={this.uploadImages}>
             {'Upload pictures'}
           </Button>
         </FixedControls>
@@ -73,7 +97,12 @@ class BulkPage extends Component {
   }
 
   render() {
+    const { isTagsPending } = this.props;
     const { state } = this.state;
+
+    if (isTagsPending) {
+      return <Loader />;
+    }
 
     if (state === 'choosing') {
       return this.renderChoosing();
@@ -87,4 +116,4 @@ class BulkPage extends Component {
   }
 }
 
-export default connect(mapStateToProps)(BulkPage);
+export default connect(mapStateToProps, mapDispatchToProps)(BulkPage);

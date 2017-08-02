@@ -6,6 +6,7 @@ class FormElement extends Component {
     children: RPT.node,
     onSubmit: RPT.func,
     className: RPT.string,
+    name: RPT.string,
   };
 
   onSubmit = (e) => {
@@ -16,10 +17,15 @@ class FormElement extends Component {
   }
 
   render() {
-    const { children, className } = this.props;
-    
+    const { children, className, name } = this.props;
+
     return (
-      <form className={className} ref={node => this._form = node} onSubmit={this.onSubmit}>
+      <form
+        name={name}
+        className={className}
+        ref={node => this._form = node}
+        onSubmit={this.onSubmit}
+      >
         {children}
       </form>
     );

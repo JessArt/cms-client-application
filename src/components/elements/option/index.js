@@ -2,7 +2,7 @@ import React from 'react';
 import RPT from 'prop-types';
 
 const OptionElement = ({ children, id, selected }) => (
-  <option value={id} defaultValue={selected}>
+  <option value={id} selected={selected}>
     {children}
   </option>
 );

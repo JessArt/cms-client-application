@@ -6,14 +6,20 @@ import PictureForm from '../../forms/picture';
 import { actions, selectors } from '../../../store';
 
 const mapStateToProps = (state, { match: { params: { id } } }) => {
-  const { data, isPending, error } = selectors.api.picture(state, { id });
+  const { data, isPending: isPicturePending, error } = selectors.api.picture(state, { id });
+  const { isPending: isTagsPending } = selectors.api.tags(state);
+  const { isPending: isImageTagsPending } = selectors.api.imageTags(state, { id });
   return {
-    data, isPending, error,
+    data,
+    isPending: isPicturePending || isTagsPending || isImageTagsPending,
+    error,
   };
 };
 
 const mapDispatchToProps = {
-  fetch: actions.api.picture,
+  fetchPicture: actions.api.picture,
+  fetchTags: actions.api.tags,
+  fetchPictureTags: actions.api.imageTags,
 };
 
 class PicturePage extends Component {
@@ -22,8 +28,10 @@ class PicturePage extends Component {
   };
 
   componentDidMount() {
-    const { match: { params: { id} }, fetch } = this.props;
-    fetch({ id });
+    const { match: { params: { id } }, fetchPicture, fetchTags, fetchPictureTags } = this.props;
+    fetchPicture({ id });
+    fetchTags();
+    fetchPictureTags({ id });
   }
 
   render() {
