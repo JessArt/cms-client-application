@@ -30,7 +30,7 @@ const PaginationElement = ({ history, location, offset, page_size: pageSize, tot
   }
 
   return (
-    <div>
+    <div className={styles.container}>
       {buttons}
     </div>
   );

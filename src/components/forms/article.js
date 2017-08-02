@@ -9,9 +9,9 @@ import FixedControls from '../ui/fixedControls';
 import { actions, selectors } from '../../store';
 
 const mapStateToProps = ((state, { article }) => {
-  const { isPending, error } = selectors.api.saveArticle(state, { id: article && article.id });
+  const { isPending } = selectors.api.saveArticle(state, { id: article && article.id });
   return {
-    isPending, error,
+    isPending,
   };
 });
 
@@ -29,12 +29,13 @@ const ArticleForm = ({ article, saveArticle, isPending }) => {
     keywords,
     text,
     cover,
+    city,
   } = article || {};
   const submitFn = form => saveArticle({ form, id });
   return (
     <Form onSubmit={submitFn}>
       {id &&
-        <Input type={'hidden'} defaultValue={id} />
+        <Input name={'id'} type={'hidden'} defaultValue={id} />
       }
       <Input label={'Title'} name={'title'} type={'text'} defaultValue={title} />
       <Input label={'Subtitle'} name={'subtitle'} type={'text'} defaultValue={subtitle} />
@@ -66,6 +67,12 @@ const ArticleForm = ({ article, saveArticle, isPending }) => {
         hint={'please, paste link to the 1200px version from the website'}
         defaultValue={cover}
       />
+      <Input
+        label={'City'}
+        name={'city'}
+        type={'text'}
+        defaultValue={city}
+      />
       <Editor
         name={'text'}
         label={'Text of the article'}
@@ -84,6 +91,7 @@ const ArticleForm = ({ article, saveArticle, isPending }) => {
 ArticleForm.propTypes = {
   article: RPT.object,
   saveArticle: RPT.func,
+  isPending: RPT.bool,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ArticleForm);

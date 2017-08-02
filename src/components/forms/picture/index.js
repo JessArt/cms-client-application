@@ -7,7 +7,7 @@ import Input from '../../elements/input';
 import Select from '../../elements/select';
 import ComplexSelect from '../../elements/complexSelect';
 import Option from '../../elements/option';
-import Editor from '../../elements/medium-editor';
+// import Editor from '../../elements/medium-editor';
 import FixedControls from '../../ui/fixedControls';
 import { actions, selectors } from '../../../store';
 import styles from './style.sass';
@@ -59,7 +59,7 @@ const PictureForm = ({ picture, small, save, isPending, tags, imageTags }) => {
       form.set('metaDescription', description);
     }
 
-    save(form, picture);
+    save({ ...picture, form });
   };
 
   const tagValue = [];
@@ -70,12 +70,26 @@ const PictureForm = ({ picture, small, save, isPending, tags, imageTags }) => {
 
     return {
       value: tag.id,
-      label: tag.name,
+      label: tag.name.toLowerCase(),
     };
   });
 
   return (
     <Form name={'pictureForm'} onSubmit={submitFn}>
+      {picture.id &&
+      <div className={styles.externalContainer}>
+        <a
+          className={styles.externalLink}
+          href={`https://jess.gallery/media/${picture.id}?type=${picture.type}`}
+          target={'_blank'}
+        >
+          {'This picture in the jess.gallery website'}
+        </a>
+      </div>
+      }
+      {picture.small_url &&
+        <img className={styles.bigImage} src={picture.small_url} />
+      }
       {small &&
         <img className={styles.image} src={picture.url} />
       }

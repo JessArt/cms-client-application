@@ -59,13 +59,16 @@ class PicturesContainer extends Component {
         </div>
       ));
 
+    const paginationMarkup = <Pagination {...pictures.meta} />;
+
     return (
       <div>
         <ImageFilter />
-        <Pagination {...pictures.meta} />
+        {paginationMarkup}
         <div className={styles.pictures}>
           {picturesList}
         </div>
+        {paginationMarkup}
       </div>
     );
   }

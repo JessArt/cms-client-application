@@ -4,6 +4,7 @@ import { Link, withRouter } from 'react-router-dom';
 import { parse } from 'query-string';
 import { processURL } from '../../../utils/urls';
 import { DEFAULT_IMAGE_TYPE } from '../../../utils/constants';
+import styles from './style.sass';
 
 const constructLink = ({ pathname, type }) => processURL(pathname, {
   type,
@@ -17,15 +18,15 @@ const ImageFilter = ({ location: { pathname, search } }) => {
   const photoLink = constructLink({ pathname, type: 'photo' });
   const otherLink = constructLink({ pathname, type: 'other' });
   return (
-    <div>
-      <Link to={artLink}>
-        {'Choose art'}
+    <div className={styles.container}>
+      <Link className={styles.elem} to={artLink}>
+        {'Art'}
       </Link>
-      <Link to={photoLink}>
-        {'Choose photo'}
+      <Link className={styles.elem} to={photoLink}>
+        {'Photo'}
       </Link>
-      <Link to={otherLink}>
-        {'Choose other links'}
+      <Link className={styles.elem} to={otherLink}>
+        {'Other'}
       </Link>
     </div>
   );

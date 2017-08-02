@@ -25,19 +25,26 @@ export const savePicture = createTile({
   type: ['api', 'savePicture'],
   fn: async ({ api, params, dispatch, actions }) => {
     try {
-      const promise = await api.post('/image', params);
+      const promise = await api.post('/image', params.form);
       dispatch(actions.ui.notifications.add({
         id: 'save_picture',
+        type: 'success',
+        message: 'Picture was successfully saved',
       }));
       return promise;
     } catch (e) {
       dispatch(actions.ui.notifications.add({
         id: 'save_picture',
+        type: 'error',
+        message: 'Error during saving a picture',
       }));
       throw new Error(e);
     }
   },
-  nesting: image => [getPictureId(image)],
+  nesting: image => {
+    console.log(image);
+    return [getPictureId(image)]; 
+  },
 });
 
 export const bulkChoosing = createTile({

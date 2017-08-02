@@ -3,6 +3,7 @@ import RPT from 'prop-types';
 import { connect } from 'react-redux';
 import Loader from '../../elements/loader';
 import PictureForm from '../../forms/picture';
+import ContainerLayout from '../../layouts/container';
 import { actions, selectors } from '../../../store';
 
 const mapStateToProps = (state, { match: { params: { id } } }) => {
@@ -42,9 +43,9 @@ class PicturePage extends Component {
     }
 
     return (
-      <div>
+      <ContainerLayout>
         <PictureForm picture={data} />
-      </div>
+      </ContainerLayout>
     );
   }
 }

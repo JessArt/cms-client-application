@@ -19,4 +19,5 @@ export const saveArticle = createTile({
 export default [
   article,
   articles,
+  saveArticle,
 ];
