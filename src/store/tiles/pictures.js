@@ -1,6 +1,7 @@
 import { createTile } from 'redux-tiles';
 import { DEFAULT_IMAGE_TYPE } from '../../utils/constants';
 import { readFile } from '../../utils/files';
+import { preparePictureForm } from '../../utils/forms';
 
 export const picture = createTile({
   type: ['api', 'picture'],
@@ -23,28 +24,33 @@ const getPictureId = ({ id, fakeId }) => id || fakeId || 'default';
 
 export const savePicture = createTile({
   type: ['api', 'savePicture'],
-  fn: async ({ api, params, dispatch, actions }) => {
-    try {
-      const promise = await api.post('/image', params.form);
-      dispatch(actions.ui.notifications.add({
-        id: 'save_picture',
-        type: 'success',
-        message: 'Picture was successfully saved',
-      }));
-      return promise;
-    } catch (e) {
+  fn: async ({ api, params }) => api.post('/image', params.form),
+  nesting: image => [getPictureId(image)],
+});
+
+export const savePictureWithNotification = createTile({
+  type: ['api', 'savePictureWithNotification'],
+  fn: async ({ params, dispatch, actions, selectors, getState }) => {
+    await dispatch(actions.api.savePicture(params));
+    const { error, data } = selectors.api.savePicture(getState(), params);
+
+    if (error) {
       dispatch(actions.ui.notifications.add({
         id: 'save_picture',
         type: 'error',
         message: 'Error during saving a picture',
       }));
-      throw new Error(e);
+      throw new Error(error);
+    } else {
+      dispatch(actions.ui.notifications.add({
+        id: 'save_picture',
+        type: 'success',
+        message: 'Picture was successfully saved',
+      }));
+      return data;
     }
   },
-  nesting: image => {
-    console.log(image);
-    return [getPictureId(image)]; 
-  },
+  nesting: image => [getPictureId(image)],
 });
 
 export const bulkChoosing = createTile({
@@ -64,10 +70,32 @@ export const bulkChoosing = createTile({
   },
 });
 
+export const bulkUploading = createTile({
+  type: ['bulk', 'upload'],
+  fn: async ({ params, dispatch, actions, history, routes }) => {
+    const promises = params.map((image) => {
+      const form = preparePictureForm(image.form);
+      return dispatch(actions.api.savePicture({ form, fakeId: image.fakeId }));
+    });
+
+    await promises;
+    dispatch(actions.ui.notifications.add({
+      id: 'upload_pictures',
+      type: 'success',
+      message: 'Pictures were successfully added',
+    }));
+    setTimeout(() => history.push(routes.pictures), 100);
+
+    return { success: true };
+  },
+});
+
 export default [
   picture,
   pictures,
   uploadPicture,
   savePicture,
+  savePictureWithNotification,
   bulkChoosing,
+  bulkUploading,
 ];

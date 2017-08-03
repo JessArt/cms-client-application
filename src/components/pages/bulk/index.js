@@ -11,10 +11,12 @@ import { actions, selectors } from '../../../store';
 const mapStateToProps = state => ({
   isTagsPending: selectors.api.tags(state).isPending,
   images: selectors.bulk.choosing(state).data,
+  isUploadingPending: selectors.bulk.upload(state).isPending,
 });
 
 const mapDispatchToProps = {
   fetchTags: actions.api.tags,
+  bulkUpload: actions.bulk.upload,
 };
 
 class BulkPage extends Component {
@@ -56,15 +58,25 @@ class BulkPage extends Component {
 
   uploadImages = () => {
     const forms = document.querySelectorAll('form[name="pictureForm"]');
-    console.log('aaa')
 
     if (forms) {
       const numberOfForms = forms.length;
+      const hash = {};
 
       for (let i = 0; i < numberOfForms; i++) {
         const form = forms[i];
-        form.dispatchEvent(new Event('submit'));
+        const formData = new FormData(form);
+        const fakeId = formData.get('fakeId');
+        hash[fakeId] = formData;
+        // form.dispatchEvent(new Event('submit'));
       }
+
+      const imagesWithForm = this.state.images.map((image) => {
+        image.form = hash[image.fakeId];
+        return image;
+      });
+
+      this.props.bulkUpload(imagesWithForm);
     }
   }
 
@@ -84,11 +96,12 @@ class BulkPage extends Component {
 
   renderUploading() {
     const { images } = this.state;
+    const { isUploadingPending } = this.props;
     return (
       <div>
         <BulkUploading images={images} />
         <FixedControls>
-          <Button onClick={this.uploadImages}>
+          <Button loading={isUploadingPending} onClick={this.uploadImages}>
             {'Upload pictures'}
           </Button>
         </FixedControls>

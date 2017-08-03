@@ -15,14 +15,17 @@ const mapDispatchToProps = {
 
 const NotificationsElement = ({ notifications, closeNotification, closeAll }) => {
   const closeFactory = id => () => closeNotification({ id });
-  const notificationsMarkup = notifications.map(({ id, message }) => (
-    <div key={id} className={styles.elem}>
+  const notificationsMarkup = notifications.map(({ id, message, type }) => {
+    console.log(type, styles[type])
+    return (
+    <div key={id} className={`${styles.elem} ${styles[type]}`}>
       <div className={styles.close} onClick={closeFactory(id)}>
         {'x'}
       </div>
       {message}
     </div>
-  ));
+  );
+  });
   const closeAllMarkup = notifications.length > 3 ? (
     <div className={styles.closeAll} onClick={closeAll}>
       {'Close all notifications'}

@@ -11,6 +11,7 @@ import Option from '../../elements/option';
 import FixedControls from '../../ui/fixedControls';
 import { actions, selectors } from '../../../store';
 import styles from './style.sass';
+import { preparePictureForm } from '../../../utils/forms';
 
 const mapStateToProps = (state, props) => {
   const id = props.picture.id;
@@ -26,7 +27,7 @@ const mapStateToProps = (state, props) => {
 };
 
 const mapDispatchToProps = {
-  save: actions.api.savePicture,
+  save: actions.api.savePictureWithNotification,
 };
 
 const PictureForm = ({ picture, small, save, isPending, tags, imageTags }) => {
@@ -43,23 +44,8 @@ const PictureForm = ({ picture, small, save, isPending, tags, imageTags }) => {
   );
 
   const submitFn = (form) => {
-    const title = form.get('title');
-    const description = form.get('description');
-    const metaTitle = form.get('metaTitle');
-    const metaDescription = form.get('metaDescription');
-    if (picture.file) {
-      form.set('image', picture.file);
-    }
-
-    if (!metaTitle) {
-      form.set('metaTitle', title);
-    }
-
-    if (!metaDescription) {
-      form.set('metaDescription', description);
-    }
-
-    save({ ...picture, form });
+    const updatedForm = preparePictureForm({ form, picture });
+    save({ ...picture, form: updatedForm });
   };
 
   const tagValue = [];
@@ -95,6 +81,9 @@ const PictureForm = ({ picture, small, save, isPending, tags, imageTags }) => {
       }
       {picture.id &&
         <Input name={'id'} type={'hidden'} defaultValue={picture.id} />
+      }
+      {picture.fakeId &&
+        <Input name={'fakeId'} type={'hidden'} defaultValue={picture.fakeId} />
       }
       <Input label={'Title'} type={'text'} name={'title'} defaultValue={picture.title} />
       <Select name={'type'}>

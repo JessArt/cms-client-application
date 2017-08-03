@@ -1,12 +1,13 @@
 import React from 'react';
 import RPT from 'prop-types';
 import { connect } from 'react-redux';
-import Button from '../elements/button';
-import Form from '../elements/form';
-import Input from '../elements/input';
-import Editor from '../elements/medium-editor';
-import FixedControls from '../ui/fixedControls';
-import { actions, selectors } from '../../store';
+import Button from '../../elements/button';
+import Form from '../../elements/form';
+import Input from '../../elements/input';
+import Editor from '../../elements/medium-editor';
+import FixedControls from '../../ui/fixedControls';
+import { actions, selectors } from '../../../store';
+import styles from './style.sass';
 
 const mapStateToProps = ((state, { article }) => {
   const { isPending } = selectors.api.saveArticle(state, { id: article && article.id });
@@ -34,6 +35,17 @@ const ArticleForm = ({ article, saveArticle, isPending }) => {
   const submitFn = form => saveArticle({ form, id });
   return (
     <Form onSubmit={submitFn}>
+      {id &&
+        <div className={styles.externalContainer}>
+          <a
+            className={styles.externalLink}
+            href={`https://jess.gallery/travel/${article.id}`}
+            target={'_blank'}
+          >
+            {'This article in the jess.gallery website'}
+          </a>
+        </div>
+      }
       {id &&
         <Input name={'id'} type={'hidden'} defaultValue={id} />
       }

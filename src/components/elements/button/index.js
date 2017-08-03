@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import styles from './style.sass';
 
 const ButtonElement = ({ to, type, children, className = '', loading, ...props }) => {
-  console.log('AAAAAA', loading)
   let Element = 'div';
   const buttonProps = {
     ...props,
