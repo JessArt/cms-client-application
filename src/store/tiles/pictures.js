@@ -74,7 +74,7 @@ export const bulkUploading = createTile({
   type: ['bulk', 'upload'],
   fn: async ({ params, dispatch, actions, history, routes }) => {
     const promises = params.map((image) => {
-      const form = preparePictureForm(image.form);
+      const form = preparePictureForm({ form: image.form, picture: image });
       return dispatch(actions.api.savePicture({ form, fakeId: image.fakeId }));
     });
 
