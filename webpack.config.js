@@ -4,22 +4,27 @@ const webpack = require('webpack');
 const isProduction = process.env.NODE_ENV === 'production';
 
 module.exports = {
-  entry: [
-    'react-hot-loader/patch',
-    // activate HMR for React
+  entry: isProduction
+    ? [
+      'babel-polyfill',
+      './src/index.js',
+    ]
+    : [
+      'react-hot-loader/patch',
+      // activate HMR for React
 
-    'webpack-dev-server/client?http://localhost:3000',
-    // bundle the client for webpack-dev-server
-    // and connect to the provided endpoint
+      'webpack-dev-server/client?http://localhost:3000',
+      // bundle the client for webpack-dev-server
+      // and connect to the provided endpoint
 
-    'webpack/hot/only-dev-server',
-    // bundle the client for hot reloading
-    // only- means to only hot reload for successful updates
+      'webpack/hot/only-dev-server',
+      // bundle the client for hot reloading
+      // only- means to only hot reload for successful updates
 
-    './src/index.js',
-    // the entry point of our app
-  ],
-  devtool: 'inline-source-map',
+      'babel-polyfill',
+      './src/index.js',
+    ],
+  devtool: isProduction ? 'cheap-source-map' : 'inline-source-map',
   output: {
     filename: 'build.js',
     path: path.join(__dirname, 'build'),
@@ -46,7 +51,23 @@ module.exports = {
   },
   plugins: isProduction
     ? [
-
+      new webpack.DefinePlugin({
+        'process.env': {
+          NODE_ENV: '"production"',
+        },
+      }),
+      new webpack.optimize.UglifyJsPlugin({
+        beautify: false,
+        mangle: {
+          screw_ie8: true,
+          keep_fnames: true,
+        },
+        warnings: false,
+        compress: {
+          screw_ie8: true,
+        },
+        comments: false,
+      }),
     ]
     : [
       new webpack.HotModuleReplacementPlugin(),
@@ -68,4 +89,4 @@ module.exports = {
     hot: true,
     // enable HMR on the server
   },
-}
+};
