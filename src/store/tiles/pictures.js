@@ -73,12 +73,11 @@ export const bulkChoosing = createTile({
 export const bulkUploading = createTile({
   type: ['bulk', 'upload'],
   fn: async ({ params, dispatch, actions, history, routes }) => {
-    const promises = params.map((image) => {
+    for (const image of params) {
       const form = preparePictureForm({ form: image.form, picture: image });
-      return dispatch(actions.api.savePicture({ form, fakeId: image.fakeId }));
-    });
+      await dispatch(actions.api.savePicture({ form, fakeId: image.fakeId }));
+    }
 
-    await promises;
     dispatch(actions.ui.notifications.add({
       id: 'upload_pictures',
       type: 'success',
