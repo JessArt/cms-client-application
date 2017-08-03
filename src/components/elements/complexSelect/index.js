@@ -15,8 +15,9 @@ class SelectElement extends Component {
   }
 
   onChange = (data) => {
+    const { multiple } = this.props;
     this.setState({
-      value: data.map(({ value }) => value),
+      value: multiple ? data.map(({ value }) => value) : data,
     });
   }
 

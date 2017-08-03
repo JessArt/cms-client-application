@@ -5,6 +5,7 @@ import Button from '../../elements/button';
 import Form from '../../elements/form';
 import Input from '../../elements/input';
 import Editor from '../../elements/medium-editor';
+import CountrySelect from './countrySelect';
 import FixedControls from '../../ui/fixedControls';
 import { actions, selectors } from '../../../store';
 import styles from './style.sass';
@@ -17,7 +18,7 @@ const mapStateToProps = ((state, { article }) => {
 });
 
 const mapDispatchToProps = {
-  saveArticle: actions.api.saveArticle,
+  saveArticle: actions.api.saveArticleWithNotification,
 };
 
 const ArticleForm = ({ article, saveArticle, isPending }) => {
@@ -30,6 +31,7 @@ const ArticleForm = ({ article, saveArticle, isPending }) => {
     keywords,
     text,
     cover,
+    country,
     city,
   } = article || {};
   const submitFn = form => saveArticle({ form, id });
@@ -58,6 +60,7 @@ const ArticleForm = ({ article, saveArticle, isPending }) => {
         type={'text'}
         defaultValue={metaTitle}
       />
+      <CountrySelect value={country} />
       <Input
         label={'Meta Description'}
         name={'meta_description'}

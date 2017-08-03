@@ -13,11 +13,42 @@ export const articles = createTile({
 
 export const saveArticle = createTile({
   type: ['api', 'saveArticle'],
-  fn: ({ api, params }) => api.post('/article', params),
+  fn: ({ api, params }) => api.post('/article', params.form),
+  nesting: ({ id = 'default' } = {}) => [id],
+});
+
+export const saveArticleWithNotification = createTile({
+  type: ['api', 'saveArticleWithNotification'],
+  fn: async ({ dispatch, actions, selectors, getState, params, history, routes }) => {
+    await dispatch(actions.api.saveArticle(params));
+    const { error, data } = selectors.api.saveArticle(getState(), params);
+
+    if (error) {
+      dispatch(actions.ui.notifications.add({
+        id: 'save_article',
+        type: 'error',
+        message: 'Error during saving an picture',
+      }));
+      throw new Error(error);
+    } else {
+      dispatch(actions.ui.notifications.add({
+        id: 'save_article',
+        type: 'success',
+        message: 'Article was successfully saved',
+      }));
+    }
+
+    if (!params.id) {
+      setTimeout(() => history.push(routes.articles), 100);
+    }
+
+    return data;
+  },
 });
 
 export default [
   article,
   articles,
   saveArticle,
+  saveArticleWithNotification,
 ];
