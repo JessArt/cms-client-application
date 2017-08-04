@@ -17,7 +17,30 @@ export const pictures = createTile({
 
 export const uploadPicture = createTile({
   type: ['api', 'uploadPicture'],
-  fn: ({ api, params: { form, cb } }) => api.post('/v1/api/images/upload', form).then(cb),
+  fn: ({ api, params: { form, cb }, dispatch, actions }) => {
+    dispatch(actions.ui.notifications.add({
+      id: 'paste_picture',
+      type: 'warning',
+      message: 'Started to upload a picture...',
+    }));
+    return api
+      .post('/v1/api/images/upload', form)
+      .then((data) => {
+        cb(data);
+        dispatch(actions.ui.notifications.add({
+          id: 'paste_picture',
+          type: 'success',
+          message: 'Picture was uploaded successfully!',
+        }));
+      })
+      .catch(() => {
+        dispatch(actions.ui.notifications.add({
+          id: 'paste_picture',
+          type: 'error',
+          message: 'Error happened during picture uploading :(',
+        }));
+      });
+  },
 });
 
 const getPictureId = ({ id, fakeId }) => id || fakeId || 'default';
