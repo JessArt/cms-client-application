@@ -3,7 +3,8 @@ export function preparePictureForm({ form, picture }) {
   const description = form.get('description');
   const metaTitle = form.get('metaTitle');
   const metaDescription = form.get('metaDescription');
-  if (picture.file) {
+  const imageFile = form.get('image');
+  if (!imageFile && picture.file) {
     form.set('image', picture.file);
   }
 

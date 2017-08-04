@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import RPT from 'prop-types';
 import { connect } from 'react-redux';
 import Button from '../../elements/button';
@@ -12,15 +12,15 @@ import FixedControls from '../../ui/fixedControls';
 import { actions, selectors } from '../../../store';
 import styles from './style.sass';
 import { preparePictureForm } from '../../../utils/forms';
+import { readFile } from '../../../utils/files';
 
 const mapStateToProps = (state, props) => {
   const id = props.picture.id;
-  const { isPending, error } = selectors.api.savePicture(state, props.picture);
+  const { isPending } = selectors.api.savePicture(state, props.picture);
   const { data: tags } = selectors.api.tags(state);
   const imageTags = id && selectors.api.imageTags(state, { id }).data;
   return {
     isPending,
-    error,
     tags,
     imageTags,
   };
@@ -30,132 +30,159 @@ const mapDispatchToProps = {
   save: actions.api.savePictureWithNotification,
 };
 
-const PictureForm = ({ picture, small, save, isPending, tags, imageTags }) => {
-  const submitButton = (
-    <Button loading={isPending} type={'submit'}>
-      {'Save picture'}
-    </Button>
-  );
+class PictureForm extends Component {
+  static propTypes = {
+    picture: RPT.object,
+    small: RPT.bool,
+    save: RPT.func,
+    isPending: RPT.bool,
+  }
 
-  const submitMarkup = small ? null : (
-    <FixedControls>
-      {submitButton}
-    </FixedControls>
-  );
+  state = {
+    url: null,
+  }
 
-  const submitFn = (form) => {
+  submitForm = (form) => {
+    const { picture, save } = this.props;
     const updatedForm = preparePictureForm({ form, picture });
     save({ ...picture, form: updatedForm });
-  };
+  }
 
-  const tagValue = [];
-  const tagOptions = (tags || []).map((tag) => {
-    if (imageTags && imageTags[tag.id]) {
-      tagValue.push(tag.id);
+  imageUpload = (e) => {
+    const file = e.target.files[0];
+    readFile(file).then(({ url }) => this.setState({ url }));
+  }
+
+  renderImage() {
+    const { url } = this.state;
+    const { picture, small } = this.props;
+
+    if (url) {
+      return <img className={styles.bigImage} src={url} />;
     }
 
-    return {
-      value: tag.id,
-      label: tag.name.toLowerCase(),
-    };
-  });
+    if (picture.small_url) {
+      return <img className={styles.bigImage} src={picture.small_url} />;
+    }
 
-  return (
-    <Form name={'pictureForm'} onSubmit={submitFn}>
-      {picture.id &&
-      <div className={styles.externalContainer}>
-        <a
-          className={styles.externalLink}
-          href={`https://jess.gallery/media/${picture.id}?type=${picture.type}`}
-          target={'_blank'}
-        >
-          {'This picture in the jess.gallery website'}
-        </a>
-      </div>
-      }
-      {picture.small_url &&
-        <img className={styles.bigImage} src={picture.small_url} />
-      }
-      {small &&
-        <img className={styles.image} src={picture.url} />
-      }
-      {picture.id &&
-        <Input name={'id'} type={'hidden'} defaultValue={picture.id} />
-      }
-      {picture.fakeId &&
-        <Input name={'fakeId'} type={'hidden'} defaultValue={picture.fakeId} />
-      }
-      <Input label={'Title'} type={'text'} name={'title'} defaultValue={picture.title} />
-      <Select name={'type'}>
-        <Option id={'photo'} selected={picture.type === 'photo'}>
-          Photo
-        </Option>
-        <Option id={'art'} selected={picture.type === 'art'}>
-          Art
-        </Option>
-        <Option id={'craft'} selected={picture.type === 'craft'}>
-          Craft
-        </Option>
-        <Option id={'postcard'} selected={picture.type === 'postcard'}>
-          postcards
-        </Option>
-        <Option id={'other'} selected={picture.type === 'other'}>
-          Other (will not appear anywhere)
-        </Option>
-      </Select>
-      <ComplexSelect multiple name={'tags'} options={tagOptions} value={tagValue} />
-      <Input name={'description'} label={'Description'} defaultValue={picture.description} />
-      {!small &&
-        <Input
-          name={'metaTitle'}
-          label={'Meta Title'}
-          hint={'For SEO. Should be at maximum 55 symbols, will appear as the first line when share; the main search comparison in google. The most important words should come first'}
-          type={'text'}
-          defaultValue={picture.meta_title}
-        />
-      }
-      {!small &&
-        <Input
-          name={'metaDescription'}
-          label={'Meta Description'}
-          hint={'For SEO. Should be an engaging sentence, with at maximum 150 symbols (more important words first). Will appear as the second line when share.'}
-          type={'text'}
-          defaultValue={picture.meta_description}
-        />
-      }
-      <Input
-        name={'keywords'}
-        label={'Keywords'}
-        hint={'For SEO. Should be words (or 2–3 words, but better smaller), separated by commas, up to 8. For instance: jess zaikova, art, acryl, dog, painted dog, acryl dog paint'}
-        type={'text'}
-        defaultValue={picture.keywords}
-      />
-      <Input
-        name={'date'}
-        label={'Date'}
-        placeholder={'YYYY | YYYY-MM | YYYY-MM-DD'}
-        type={'text'}
-        defaultValue={picture.date}
-      />
-      <Input
-        name={'location'}
-        label={'Location'}
-        placeholder={'In plain english'}
-        type={'location'}
-        defaultValue={picture.location}
-      />
-      {submitMarkup}
-    </Form>
-  );
-};
+    if (small) {
+      return <img className={styles.image} src={picture.url} />;
+    }
+    
+    return null;
+  }
 
-PictureForm.propTypes = {
-  picture: RPT.object,
-  small: RPT.bool,
-  save: RPT.func,
-  isPending: RPT.bool,
-  error: RPT.any,
-};
+  render() {
+    const { picture, small, isPending, tags, imageTags } = this.props;
+    const submitButton = (
+      <Button loading={isPending} type={'submit'}>
+        {'Save picture'}
+      </Button>
+    );
+
+    const submitMarkup = small ? null : (
+      <FixedControls>
+        {submitButton}
+      </FixedControls>
+    );
+
+    const tagValue = [];
+    const tagOptions = (tags || []).map((tag) => {
+      if (imageTags && imageTags[tag.id]) {
+        tagValue.push(tag.id);
+      }
+
+      return {
+        value: tag.id,
+        label: tag.name.toLowerCase(),
+      };
+    });
+
+    return (
+      <Form name={'pictureForm'} onSubmit={this.submitForm}>
+        {picture.id &&
+        <div className={styles.externalContainer}>
+          <a
+            className={styles.externalLink}
+            href={`https://jess.gallery/media/${picture.id}?type=${picture.type}`}
+            target={'_blank'}
+          >
+            {'This picture in the jess.gallery website'}
+          </a>
+        </div>
+        }
+        {this.renderImage()}
+        <Input type={'file'} name={'image'} onChange={this.imageUpload} />
+        {picture.id &&
+          <Input name={'id'} type={'hidden'} defaultValue={picture.id} />
+        }
+        {picture.fakeId &&
+          <Input name={'fakeId'} type={'hidden'} defaultValue={picture.fakeId} />
+        }
+        <Input label={'Title'} type={'text'} name={'title'} defaultValue={picture.title} />
+        <Select name={'type'}>
+          <Option id={'photo'} selected={picture.type === 'photo'}>
+            Photo
+          </Option>
+          <Option id={'art'} selected={picture.type === 'art'}>
+            Art
+          </Option>
+          <Option id={'craft'} selected={picture.type === 'craft'}>
+            Craft
+          </Option>
+          <Option id={'postcard'} selected={picture.type === 'postcard'}>
+            postcards
+          </Option>
+          <Option id={'other'} selected={picture.type === 'other'}>
+            Other (will not appear anywhere)
+          </Option>
+        </Select>
+        <ComplexSelect multiple name={'tags'} options={tagOptions} value={tagValue} />
+        <Input name={'description'} label={'Description'} defaultValue={picture.description} />
+        {!small &&
+          <Input
+            name={'metaTitle'}
+            label={'Meta Title'}
+            hint={'For SEO. Should be at maximum 55 symbols, will appear as the first line when share; the main search comparison in google. The most important words should come first'}
+            type={'text'}
+            defaultValue={picture.meta_title}
+          />
+        }
+        {!small &&
+          <Input
+            name={'metaDescription'}
+            label={'Meta Description'}
+            hint={'For SEO. Should be an engaging sentence, with at maximum 150 symbols (more important words first). Will appear as the second line when share.'}
+            type={'text'}
+            defaultValue={picture.meta_description}
+          />
+        }
+        <Input
+          name={'keywords'}
+          label={'Keywords'}
+          hint={'For SEO. Should be words (or 2–3 words, but better smaller), separated by commas, up to 8. For instance: jess zaikova, art, acryl, dog, painted dog, acryl dog paint'}
+          type={'text'}
+          defaultValue={picture.keywords}
+        />
+        <Input
+          name={'date'}
+          label={'Date'}
+          placeholder={'YYYY | YYYY-MM | YYYY-MM-DD'}
+          type={'text'}
+          defaultValue={picture.date}
+        />
+        <Input
+          name={'location'}
+          label={'Location'}
+          placeholder={'In plain english'}
+          type={'location'}
+          defaultValue={picture.location}
+        />
+        {submitMarkup}
+      </Form>
+    );
+  }
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(PictureForm);
 
