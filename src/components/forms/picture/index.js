@@ -112,7 +112,9 @@ class PictureForm extends Component {
         </div>
         }
         {this.renderImage()}
-        <Input type={'file'} name={'image'} onChange={this.imageUpload} />
+        {!small &&
+          <Input type={'file'} name={'image'} onChange={this.imageUpload} />
+        }
         {picture.id &&
           <Input name={'id'} type={'hidden'} defaultValue={picture.id} />
         }
