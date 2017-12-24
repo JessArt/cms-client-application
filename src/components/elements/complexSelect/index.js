@@ -1,31 +1,31 @@
-import React, { Component } from 'react';
-import RPT from 'prop-types';
-import Select from 'react-select';
+import React, { Component } from "react";
+import RPT from "prop-types";
+import { Creatable } from "react-select";
 
 class SelectElement extends Component {
   static propTypes = {
     options: RPT.array,
     value: RPT.array,
     name: RPT.string,
-    multiple: RPT.bool,
-  }
+    multiple: RPT.bool
+  };
 
   state = {
-    value: this.props.value,
-  }
+    value: this.props.value
+  };
 
-  onChange = (data) => {
+  onChange = data => {
     const { multiple } = this.props;
     this.setState({
-      value: multiple ? data.map(({ value }) => value) : data,
+      value: multiple ? data.map(({ value }) => value) : data
     });
-  }
+  };
 
   render() {
     const { value } = this.state;
     const { name, multiple, options } = this.props;
     return (
-      <Select
+      <Creatable
         value={value}
         name={name}
         multi={multiple}
