@@ -1,10 +1,10 @@
-import { createSyncTile } from 'redux-tiles';
+import { createSyncTile } from "redux-tiles";
 
 export const notifications = createSyncTile({
-  type: ['ui', 'notifications'],
+  type: ["ui", "notifications"],
   initialState: [],
   fns: {
-    add: ({ params, dispatch, actions, selectors, getState }) => {
+    add: ({ params, dispatch, actions, selectors, getState, api }) => {
       const currentNotifications = selectors.ui.notifications(getState());
       setTimeout(() => {
         dispatch(actions.ui.notifications.close(params));
@@ -15,10 +15,8 @@ export const notifications = createSyncTile({
       const currentNotifications = selectors.ui.notifications(getState());
       return currentNotifications.filter(({ id }) => id !== params.id);
     },
-    closeAll: () => [],
-  },
+    closeAll: () => []
+  }
 });
 
-export default [
-  notifications,
-];
+export default [notifications];
