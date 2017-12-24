@@ -16,8 +16,6 @@ export const saveArticle = createTile({
   fn: ({ api, params, selectors, getState }) => {
     const token = selectors.auth.status(getState());
 
-    console.log(params);
-
     if (params.id) {
       return api.put(`/v1/articles/${params.id}?token=${token}`, params.form);
     } else {
