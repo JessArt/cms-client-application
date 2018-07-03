@@ -7,8 +7,8 @@ import Input from "../../elements/input";
 import Select from "../../elements/select";
 import ComplexSelect from "../../elements/complexSelect";
 import Option from "../../elements/option";
-// import Editor from '../../elements/medium-editor';
 import FixedControls from "../../ui/fixedControls";
+import ConfirmationModal from "../../ui/confirmationModal";
 import { actions, selectors } from "../../../store";
 import styles from "./style.sass";
 import { preparePictureForm } from "../../../utils/forms";
@@ -32,7 +32,8 @@ const mapStateToProps = (state, props) => {
 };
 
 const mapDispatchToProps = {
-  save: actions.api.savePictureWithNotification
+  save: actions.api.savePictureWithNotification,
+  deletePicture: actions.api.deletePictureWithRedirect
 };
 
 class PictureForm extends Component {
@@ -43,7 +44,13 @@ class PictureForm extends Component {
     isPending: RPT.bool,
     error: RPT.object,
     data: RPT.object,
-    callback: RPT.func
+    callback: RPT.func,
+    defaults: RPT.object,
+    deletePicture: RPT.func
+  };
+
+  static defaultProps = {
+    defaults: {}
   };
 
   state = {
@@ -63,6 +70,11 @@ class PictureForm extends Component {
   imageUpload = e => {
     const file = e.target.files[0];
     readFile(file).then(({ url }) => this.setState({ url }));
+  };
+
+  deleteImage = () => {
+    const { picture, deletePicture } = this.props;
+    deletePicture(picture);
   };
 
   renderImage() {
@@ -99,28 +111,50 @@ class PictureForm extends Component {
   }
 
   render() {
-    const { picture, small, isPending, tags, imageTags } = this.props;
+    const { picture, small, isPending, tags, imageTags, defaults } = this.props;
     const submitButton = (
       <Button loading={isPending} type={"submit"}>
         {"Save picture"}
       </Button>
     );
 
-    const submitMarkup = small ? null : (
-      <FixedControls>{submitButton}</FixedControls>
+    const deleteButton = picture && (
+      <ConfirmationModal
+        onConfirm={this.deleteImage}
+        text={`You are about to delete an image: ${picture.title}`}
+      >
+        {({ open }) => (
+          <Button style={"danger"} loading={false} onClick={open}>
+            {"Delete"}
+          </Button>
+        )}
+      </ConfirmationModal>
     );
 
-    const tagValue = [];
-    const tagOptions = (tags || []).map(tag => {
-      if (imageTags && imageTags[tag.id]) {
-        tagValue.push(tag.id);
-      }
+    const submitMarkup = small ? null : (
+      <FixedControls>
+        <div className={styles.buttons}>
+          <div className={styles.buttonWrapper}>{submitButton}</div>
+          <div className={styles.buttonWrapper}>{deleteButton}</div>
+        </div>
+      </FixedControls>
+    );
 
-      return {
-        value: tag.id,
-        label: tag.name.toLowerCase()
-      };
-    });
+    const tagValue = defaults.tags
+      ? defaults.tags.map(({ value }) => value)
+      : [];
+    const tagOptions = (tags || [])
+      .map(tag => {
+        if (imageTags && imageTags[tag.id]) {
+          tagValue.push(tag.id);
+        }
+
+        return {
+          value: tag.id,
+          label: tag.name.toLowerCase()
+        };
+      })
+      .concat(defaults.tags ? defaults.tags : []);
 
     return (
       <Form
@@ -143,7 +177,7 @@ class PictureForm extends Component {
           </div>
         )}
         {this.renderImage()}
-        {!small && (
+        {picture.id && (
           <Input type={"file"} name={"image"} onChange={this.imageUpload} />
         )}
         {picture.id && (
@@ -219,21 +253,21 @@ class PictureForm extends Component {
             "For SEO. Should be words (or 2–3 words, but better smaller), separated by commas, up to 8. For instance: jess zaikova, art, acryl, dog, painted dog, acryl dog paint"
           }
           type={"text"}
-          defaultValue={picture.keywords}
+          defaultValue={defaults.keywords || picture.keywords}
         />
         <Input
           name={"date"}
           label={"Date"}
           placeholder={"YYYY | YYYY-MM | YYYY-MM-DD"}
           type={"text"}
-          defaultValue={picture.date}
+          defaultValue={defaults.date || picture.date}
         />
         <Input
           name={"location"}
           label={"Location"}
           placeholder={"In plain english"}
           type={"location"}
-          defaultValue={picture.location}
+          defaultValue={defaults.location || picture.location}
         />
         {submitMarkup}
       </Form>
@@ -241,4 +275,7 @@ class PictureForm extends Component {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(PictureForm);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PictureForm);

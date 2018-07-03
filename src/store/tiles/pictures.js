@@ -1,7 +1,5 @@
 import { createTile } from "redux-tiles";
 import { DEFAULT_IMAGE_TYPE } from "../../utils/constants";
-import { readFile } from "../../utils/files";
-import { preparePictureForm } from "../../utils/forms";
 
 export const picture = createTile({
   type: ["api", "picture"],
@@ -14,10 +12,15 @@ export const pictures = createTile({
   fn: ({ api, params }) =>
     api.get("/v1/images", {
       type: params.type,
+      tags: params.tags,
       pageNumber: params.page,
       pageSize: 30
     }),
-  nesting: ({ type = DEFAULT_IMAGE_TYPE, page = 0 }) => [type, page]
+  nesting: ({ type = DEFAULT_IMAGE_TYPE, page = 0, tags = "no_tags" }) => [
+    type,
+    page,
+    tags
+  ]
 });
 
 export const uploadPicture = createTile({
@@ -77,9 +80,46 @@ export const savePicture = createTile({
   nesting: image => [getPictureId(image)]
 });
 
+export const deletePicture = createTile({
+  type: ["api", "deletePicture"],
+  fn: ({ api, params, getState, selectors }) => {
+    const token = selectors.auth.status(getState());
+    return api.deleteRequest(`/v1/images/${params.id}?token=${token}`, {
+      id: params.id
+    });
+  },
+  nesting: image => [getPictureId(image)]
+});
+
+export const deletePictureWithRedirect = createTile({
+  type: ["api", "deletePictureWithRedirect"],
+  fn: async ({ params, actions, dispatch, history, routes }) => {
+    const { error } = await dispatch(actions.api.deletePicture(params));
+
+    if (error) {
+      dispatch(
+        actions.ui.notifications.add({
+          id: "delete_picture",
+          type: "error",
+          message: "Error during deleting a picture"
+        })
+      );
+    } else {
+      dispatch(
+        actions.ui.notifications.add({
+          id: "delete_picture",
+          type: "success",
+          message: "Picture was successfully deleted"
+        })
+      );
+      history.push(routes.pictures);
+    }
+  }
+});
+
 export const savePictureWithNotification = createTile({
   type: ["api", "savePictureWithNotification"],
-  fn: async ({ params, dispatch, actions, selectors, getState }) => {
+  fn: async ({ params, dispatch, actions }) => {
     const { error, data } = await dispatch(actions.api.savePicture(params));
 
     if (error) {
@@ -105,50 +145,12 @@ export const savePictureWithNotification = createTile({
   nesting: image => [getPictureId(image)]
 });
 
-export const bulkChoosing = createTile({
-  type: ["bulk", "choosing"],
-  fn: async ({ params: files, history, routes }) => {
-    const numberOfFiles = files.length;
-    const parsedFiles = [];
-
-    for (let i = 0; i < numberOfFiles; i++) {
-      const file = files[i];
-      parsedFiles.push(readFile(file));
-    }
-
-    const chosenPictures = await Promise.all(parsedFiles);
-    setTimeout(() => history.push(routes.bulk), 100);
-    return chosenPictures;
-  }
-});
-
-export const bulkUploading = createTile({
-  type: ["bulk", "upload"],
-  fn: async ({ params, dispatch, actions, history, routes }) => {
-    for (const image of params) {
-      const form = preparePictureForm({ form: image.form, picture: image });
-      await dispatch(actions.api.savePicture({ form, fakeId: image.fakeId }));
-    }
-
-    dispatch(
-      actions.ui.notifications.add({
-        id: "upload_pictures",
-        type: "success",
-        message: "Pictures were successfully added"
-      })
-    );
-    setTimeout(() => history.push(routes.pictures), 100);
-
-    return { success: true };
-  }
-});
-
 export default [
   picture,
   pictures,
   uploadPicture,
   savePicture,
-  savePictureWithNotification,
-  bulkChoosing,
-  bulkUploading
+  deletePicture,
+  deletePictureWithRedirect,
+  savePictureWithNotification
 ];
