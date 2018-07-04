@@ -2,6 +2,8 @@ export default {
   login: "/login",
   home: "/",
   bulk: "/bulk",
+  bulkEditing: "/bulk/editing",
+  tags: "/tags",
   pictures: "/pictures",
   picture: "/pictures/:id",
   createPictureURL: id => `/pictures/${id}`,
