@@ -1,12 +1,22 @@
 import React, { Component } from "react";
 import RPT from "prop-types";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 import Loader from "../../elements/loader";
 import PictureForm from "../../forms/picture";
 import ContainerLayout from "../../layouts/container";
+import ErrorContainer from "../../ui/errorContainer";
+import routes from "../../../routing/routes";
 import { actions, selectors } from "../../../store";
 
-const mapStateToProps = (state, { match: { params: { id } } }) => {
+const mapStateToProps = (
+  state,
+  {
+    match: {
+      params: { id }
+    }
+  }
+) => {
   const { data, isPending: isPicturePending, error } = selectors.api.picture(
     state,
     { id }
@@ -29,7 +39,15 @@ const mapDispatchToProps = {
 };
 
 class PicturePage extends Component {
-  static propTypes = {};
+  static propTypes = {
+    data: RPT.object,
+    isPending: RPT.bool,
+    error: RPT.object,
+
+    fetchPicture: RPT.func,
+    fetchTags: RPT.func,
+    fetchPictureTags: RPT.func
+  };
 
   componentDidMount() {
     this.fetch();
@@ -37,7 +55,9 @@ class PicturePage extends Component {
 
   fetch = () => {
     const {
-      match: { params: { id } },
+      match: {
+        params: { id }
+      },
       fetchPicture,
       fetchTags,
       fetchPictureTags
@@ -48,7 +68,18 @@ class PicturePage extends Component {
   };
 
   render() {
-    const { isPending, data } = this.props;
+    const { isPending, data, error } = this.props;
+
+    if (error) {
+      return (
+        <ErrorContainer refresh={() => this.fetch()}>
+          {"Seems your picture could not be found. "}
+          {"Go to the "}
+          <Link to={routes.pictures}>{"pictures list"}</Link>
+          {"."}
+        </ErrorContainer>
+      );
+    }
 
     if (isPending || !data) {
       return <Loader />;
@@ -62,4 +93,7 @@ class PicturePage extends Component {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(PicturePage);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PicturePage);
