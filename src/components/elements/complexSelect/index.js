@@ -7,7 +7,8 @@ class SelectElement extends Component {
     options: RPT.array,
     value: RPT.array,
     name: RPT.string,
-    multiple: RPT.bool
+    multiple: RPT.bool,
+    onChange: RPT.func
   };
 
   state = {
@@ -15,10 +16,12 @@ class SelectElement extends Component {
   };
 
   onChange = data => {
-    const { multiple } = this.props;
+    const { multiple, onChange } = this.props;
     this.setState({
       value: multiple ? data.map(({ value }) => value) : data
     });
+
+    onChange && onChange(data);
   };
 
   render() {
