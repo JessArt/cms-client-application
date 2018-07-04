@@ -5,7 +5,10 @@ import ImageFilter from "../../ui/imageFilter";
 import Loader from "../../elements/loader";
 import Pagination from "../pagination";
 import Picture from "../picture";
+import Button from "../../elements/button";
 import ErrorContainer from "../errorContainer";
+import { stringify } from "query-string";
+import routes from "../../../routing/routes";
 import { actions, selectors } from "../../../store";
 import styles from "./style.sass";
 
@@ -62,6 +65,29 @@ class PicturesContainer extends Component {
     fetch(params);
   }
 
+  renderZeroPictures() {
+    const { params } = this.props;
+
+    if (params && params.type) {
+      const stringifiedQuery = stringify({
+        ...params,
+        type: params.type === "art" ? "photo" : "art"
+      });
+      const link = `${routes.pictures}?${stringifiedQuery}`;
+      return (
+        <div>
+          <p>{"There are no pictures by given parameters :("}</p>
+          <Button to={link}>
+            {"Search in "}
+            {params.type === "art" ? "photos" : "art"}
+          </Button>
+        </div>
+      );
+    }
+
+    return "There are no pictures by given parameters :(";
+  }
+
   render() {
     const {
       pictures,
@@ -99,7 +125,7 @@ class PicturesContainer extends Component {
             </div>
           );
         })
-      : "There are no pictures by given parameters :(";
+      : this.renderZeroPictures();
 
     const paginationMarkup = <Pagination {...pictures.meta} />;
 
