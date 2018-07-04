@@ -48,7 +48,9 @@ export default class ConfirmationModal extends React.Component {
           <Button
             className={styles.button}
             style={"danger"}
-            onClick={onConfirm}
+            onClick={event =>
+              onConfirm({ event, open: this.showModal, close: this.closeModal })
+            }
           >
             {"Yes"}
           </Button>

@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import RPT from 'prop-types';
+import React, { Component } from "react";
+import RPT from "prop-types";
 
 class FormElement extends Component {
   static propTypes = {
@@ -7,23 +7,27 @@ class FormElement extends Component {
     onSubmit: RPT.func,
     className: RPT.string,
     name: RPT.string,
+    refFn: RPT.func
   };
 
-  onSubmit = (e) => {
+  onSubmit = e => {
     const { onSubmit } = this.props;
     e.preventDefault();
     const form = this._form;
     onSubmit(new FormData(form));
-  }
+  };
 
   render() {
-    const { children, className, name } = this.props;
+    const { children, className, name, refFn } = this.props;
 
     return (
       <form
         name={name}
         className={className}
-        ref={node => this._form = node}
+        ref={node => {
+          refFn && refFn(node);
+          this._form = node;
+        }}
         onSubmit={this.onSubmit}
       >
         {children}

@@ -32,6 +32,18 @@ class ArticlesContainer extends Component {
     this.props.fetch();
   }
 
+  renderArticles() {
+    const { data } = this.props;
+
+    if (data.length === 0) {
+      return (
+        <div>{"There are no articles – probably something happened."}</div>
+      );
+    }
+
+    return data.map(article => <Article key={article.id} article={article} />);
+  }
+
   render() {
     const { isPending, data, error, fetch } = this.props;
 
@@ -43,11 +55,7 @@ class ArticlesContainer extends Component {
       return <Loader />;
     }
 
-    const articles = (data || []).map(article => (
-      <Article key={article.id} article={article} />
-    ));
-
-    return <ContainerLayout>{articles}</ContainerLayout>;
+    return <ContainerLayout>{this.renderArticles()}</ContainerLayout>;
   }
 }
 

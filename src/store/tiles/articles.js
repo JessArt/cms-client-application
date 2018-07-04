@@ -8,7 +8,8 @@ export const article = createTile({
 
 export const articles = createTile({
   type: ["api", "articles"],
-  fn: ({ api }) => api.get("/v1/articles").then(({ data }) => data)
+  fn: ({ api }) =>
+    api.get("/v2/articles", { drafts: true }).then(({ data }) => data)
 });
 
 export const saveArticle = createTile({

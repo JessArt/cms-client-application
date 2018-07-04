@@ -1,21 +1,28 @@
-import React, { Component } from 'react';
-import RPT from 'prop-types';
-import { connect } from 'react-redux';
-import ArticleForm from '../forms/article';
-import ContainerLayout from '../layouts/container';
-import Loader from '../elements/loader';
-import { actions, selectors } from '../../store';
+import React, { Component } from "react";
+import RPT from "prop-types";
+import { connect } from "react-redux";
+import ArticleForm from "../forms/article";
+import ContainerLayout from "../layouts/container";
+import Loader from "../elements/loader";
+import { actions, selectors } from "../../store";
 
-const mapStateToProps = (state, { match: { params: { id } } }) => {
+const mapStateToProps = (
+  state,
+  {
+    match: {
+      params: { id }
+    }
+  }
+) => {
   const { data, isPending } = selectors.api.article(state, { id });
   return {
     article: data,
-    isPending,
+    isPending
   };
 };
 
 const mapDispatchToProps = {
-  fetch: actions.api.article,
+  fetch: actions.api.article
 };
 
 class ArticlePage extends Component {
@@ -23,33 +30,51 @@ class ArticlePage extends Component {
     fetch: RPT.func,
     match: RPT.shape({
       params: RPT.shape({
-        id: RPT.string,
-      }),
+        id: RPT.string
+      })
     }),
     isPending: RPT.bool,
-    article: RPT.object,
+    article: RPT.object
+  };
+
+  componentDidMount() {
+    this.fetch();
   }
 
-  componentWillMount() {
-    const { fetch, match: { params: { id } } } = this.props;
-    if (id !== 'new') {
+  fetch() {
+    const {
+      fetch,
+      match: {
+        params: { id }
+      }
+    } = this.props;
+    if (id !== "new") {
       fetch({ id });
     }
   }
 
   render() {
-    const { isPending, article, match: { params: { id } } } = this.props;
+    const {
+      isPending,
+      article,
+      match: {
+        params: { id }
+      }
+    } = this.props;
 
-    if (id !== 'new' && (isPending || !article)) {
+    if (id !== "new" && (isPending || !article)) {
       return <Loader />;
     }
 
     return (
       <ContainerLayout>
-        <ArticleForm article={article} />
+        <ArticleForm refresh={() => this.fetch()} article={article} />
       </ContainerLayout>
     );
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ArticlePage);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ArticlePage);

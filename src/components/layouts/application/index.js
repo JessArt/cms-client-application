@@ -30,7 +30,7 @@ const ApplicationLayout = ({ isAuthorized, children }) => (
 
 ApplicationLayout.propTypes = {
   children: RPT.node,
-  isAuthorized: RPT.bool
+  isAuthorized: RPT.string
 };
 
 export default withRouter(connect(mapStateToProps)(ApplicationLayout));
