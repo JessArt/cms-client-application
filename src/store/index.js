@@ -1,4 +1,3 @@
-import logger from "redux-logger";
 import { createStore, applyMiddleware } from "redux";
 import { createEntities, createMiddleware } from "redux-tiles";
 import tiles from "./tiles";
@@ -16,7 +15,12 @@ const { middleware } = createMiddleware({
   routes
 });
 
-const middlewares = [middleware, logger];
+const middlewares = [middleware];
+
+if (__LOCAL__) {
+  const logger = require("redux-logger").default;
+  middlewares.push(logger);
+}
 
 export const store = createStore(reducer, applyMiddleware(...middlewares));
 

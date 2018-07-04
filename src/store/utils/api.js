@@ -1,7 +1,9 @@
 import { stringify } from "query-string";
 import { store, actions } from "../index";
 
-const prefix = "https://node-api.jess.gallery";
+const prefix = __LOCAL__
+  ? "http://localhost:4003"
+  : "https://node-api.jess.gallery";
 
 function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
@@ -31,8 +33,7 @@ export function get(url, parameters) {
   return fetch(processedURL, {
     method: "GET",
     headers: {
-      Accept: "application/json",
-      Authorization: "Some test request"
+      Accept: "application/json"
     }
   })
     .then(checkStatus)
@@ -44,8 +45,7 @@ export function post(url, form) {
   return fetch(processedURL, {
     method: "POST",
     headers: {
-      Accept: "application/json",
-      Authorization: "Some test request"
+      Accept: "application/json"
     },
     body: form
   })
@@ -58,10 +58,24 @@ export function put(url, form) {
   return fetch(processedURL, {
     method: "PUT",
     headers: {
-      Accept: "application/json",
-      Authorization: "Some test request"
+      Accept: "application/json"
     },
     body: form
+  })
+    .then(checkStatus)
+    .then(parseJSON);
+}
+
+// we use `deleteRequest` instead of `delete`
+// because it is a reserved word in javascript
+export function deleteRequest(url) {
+  const processedURL = processURL(url);
+
+  return fetch(processedURL, {
+    method: "DELETE",
+    headers: {
+      Accept: "application/json"
+    }
   })
     .then(checkStatus)
     .then(parseJSON);
