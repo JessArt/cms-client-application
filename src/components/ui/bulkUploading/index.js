@@ -1,24 +1,42 @@
-import React from 'react';
-import RPT from 'prop-types';
-import PictureForm from '../../forms/picture';
-import styles from './style.sass';
+import React, { Component } from "react";
+import RPT from "prop-types";
 
-const BulkUploading = ({ images }) => {
-  const imagesMarkup = images.map(image => (
-    <div key={image.fakeId} className={styles.element}>
-      <PictureForm small picture={image} />
-    </div>
-  ));
+import { connect } from "react-redux";
+import { selectors, actions } from "../../../store";
 
-  return (
-    <div className={styles.container}>
-      {imagesMarkup}
-    </div>
-  );
+import PictureForm from "../../forms/picture";
+
+import styles from "./style.sass";
+
+const mapStateToProps = state => ({
+  bulkParams: selectors.bulk.params.getAll(state)
+});
+
+const mapDispatchToProps = {
+  resetDefaults: actions.bulk.params.reset
 };
 
-BulkUploading.propTypes = {
-  images: RPT.array,
-};
+class BulkUploading extends Component {
+  static propTypes = {
+    images: RPT.array,
+    bulkParams: RPT.object,
+    resetDefaults: RPT.func
+  };
 
-export default BulkUploading;
+  componentWillUnmount() {
+    // this.props.resetDefaults();
+  }
+
+  render() {
+    const { images, bulkParams } = this.props;
+    const imagesMarkup = images.map(image => (
+      <div key={image.fakeId} className={styles.element}>
+        <PictureForm defaults={bulkParams} small picture={image} />
+      </div>
+    ));
+
+    return <div className={styles.container}>{imagesMarkup}</div>;
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(BulkUploading);
