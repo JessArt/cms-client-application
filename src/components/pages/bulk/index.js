@@ -1,60 +1,63 @@
-import React, { Component } from 'react';
-import RPT from 'prop-types';
-import { connect } from 'react-redux';
-import Button from '../../elements/button';
-import BulkChoosing from '../../ui/bulkChoosing';
-import BulkUploading from '../../ui/bulkUploading';
-import FixedControls from '../../ui/fixedControls';
-import Loader from '../../elements/loader';
-import { actions, selectors } from '../../../store';
+import React, { Component } from "react";
+import RPT from "prop-types";
+
+import { connect } from "react-redux";
+import { actions, selectors } from "../../../store";
+
+import Button from "../../elements/button";
+import BulkChoosing from "../../ui/bulkChoosing";
+import BulkUploading from "../../ui/bulkUploading";
+import FixedControls from "../../ui/fixedControls";
+import BulkParamsForm from "../../forms/bulkParams";
+import Loader from "../../elements/loader";
 
 const mapStateToProps = state => ({
   isTagsPending: selectors.api.tags(state).isPending,
   images: selectors.bulk.choosing(state).data,
-  isUploadingPending: selectors.bulk.upload(state).isPending,
+  isUploadingPending: selectors.bulk.upload(state).isPending
 });
 
 const mapDispatchToProps = {
   fetchTags: actions.api.tags,
-  bulkUpload: actions.bulk.upload,
+  bulkUpload: actions.bulk.upload
 };
 
 class BulkPage extends Component {
   state = {
-    state: 'choosing',
+    state: "choosing",
     images: (this.props.images || []).map(image => {
       const fakeId = Math.random();
 
       return {
         selected: true,
         fakeId,
-        ...image,
+        ...image
       };
-    }),
-  }
+    })
+  };
 
   componentDidMount() {
     this.props.fetchTags();
   }
 
-  toggleImage = (id) => {
+  toggleImage = id => {
     this.setState({
-      images: this.state.images.map((image) => {
+      images: this.state.images.map(image => {
         if (id === image.fakeId) {
           return { ...image, selected: !image.selected };
         }
 
         return image;
-      }),
+      })
     });
-  }
+  };
 
   filterImages = () => {
     this.setState({
       images: this.state.images.filter(image => image.selected === true),
-      state: 'uploading',
+      state: "uploading"
     });
-  }
+  };
 
   uploadImages = () => {
     const forms = document.querySelectorAll('form[name="pictureForm"]');
@@ -66,29 +69,27 @@ class BulkPage extends Component {
       for (let i = 0; i < numberOfForms; i++) {
         const form = forms[i];
         const formData = new FormData(form);
-        const fakeId = formData.get('fakeId');
+        const fakeId = formData.get("fakeId");
         hash[fakeId] = formData;
-        // form.dispatchEvent(new Event('submit'));
       }
 
-      const imagesWithForm = this.state.images.map((image) => {
+      const imagesWithForm = this.state.images.map(image => {
         image.form = hash[image.fakeId];
         return image;
       });
 
       this.props.bulkUpload(imagesWithForm);
     }
-  }
+  };
 
   renderChoosing() {
     const { images } = this.state;
     return (
       <div>
+        <BulkParamsForm />
         <BulkChoosing images={images} toggleImage={this.toggleImage} />
         <FixedControls>
-          <Button onClick={this.filterImages}>
-            {'Go to upload'}
-          </Button>
+          <Button onClick={this.filterImages}>{"Go to upload"}</Button>
         </FixedControls>
       </div>
     );
@@ -102,7 +103,7 @@ class BulkPage extends Component {
         <BulkUploading images={images} />
         <FixedControls>
           <Button loading={isUploadingPending} onClick={this.uploadImages}>
-            {'Upload pictures'}
+            {"Upload pictures"}
           </Button>
         </FixedControls>
       </div>
@@ -117,11 +118,11 @@ class BulkPage extends Component {
       return <Loader />;
     }
 
-    if (state === 'choosing') {
+    if (state === "choosing") {
       return this.renderChoosing();
     }
 
-    if (state === 'uploading') {
+    if (state === "uploading") {
       return this.renderUploading();
     }
 
