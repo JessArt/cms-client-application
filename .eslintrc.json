@@ -2,19 +2,24 @@
   "parser": "babel-eslint",
   "extends": [
     "prettier",
+    "plugin:react/recommended",
     "prettier/react"
   ],
   "env": {
+    "es6" :true,
     "browser": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2017
   },
   "plugins": [
     "react",
-    "prettier",
     "jsx-a11y",
     "import"
   ],
   "rules": {
     "no-param-reassign": 0,
+    "no-unused-vars": "error",
     "class-methods-use-this": 0,
     "react/jsx-filename-extension": 0,
     "react/jsx-no-bind": 0,
@@ -29,7 +34,6 @@
       "devDependencies": true,
       "optionalDependencies": false,
       "peerDependencies": false
-    }],
-    "prettier/prettier": "error"
+    }]
   }
 }
