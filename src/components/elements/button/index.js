@@ -1,21 +1,29 @@
-import React from 'react';
-import RPT from 'prop-types';
-import { Link } from 'react-router-dom';
-import styles from './style.sass';
+import React from "react";
+import RPT from "prop-types";
+import { Link } from "react-router-dom";
+import styles from "./style.sass";
 
-const ButtonElement = ({ to, type, children, className = '', loading, ...props }) => {
-  let Element = 'div';
+const ButtonElement = ({
+  to,
+  type,
+  children,
+  className = "",
+  loading,
+  style,
+  ...props
+}) => {
+  let Element = "div";
   const buttonProps = {
-    ...props,
+    ...props
   };
 
-  if (type === 'button') {
-    Element = 'button';
+  if (type === "button") {
+    Element = "button";
   }
 
-  if (type === 'submit') {
-    Element = 'button';
-    buttonProps.type = 'submit';
+  if (type === "submit") {
+    Element = "button";
+    buttonProps.type = "submit";
   }
 
   if (to) {
@@ -28,23 +36,28 @@ const ButtonElement = ({ to, type, children, className = '', loading, ...props }
   }
 
   return (
-    <Element className={`${styles.button} ${className || ''}`} {...buttonProps}>
-      {loading ? 'processing...' : children}
+    <Element
+      className={`${styles.button} ${style ? styles[style] : ""} ${className ||
+        ""}`}
+      {...buttonProps}
+    >
+      {loading ? "processing..." : children}
     </Element>
   );
 };
 
 ButtonElement.propTypes = {
   children: RPT.node,
-  type: RPT.oneOf(['div', 'button', 'submit']),
+  type: RPT.oneOf(["div", "button", "submit"]),
   props: RPT.any,
   loading: RPT.bool,
   to: RPT.string,
   className: RPT.string,
+  style: RPT.oneOf(["danger"])
 };
 
 ButtonElement.defaultProps = {
-  type: 'div',
+  type: "div"
 };
 
 export default ButtonElement;
