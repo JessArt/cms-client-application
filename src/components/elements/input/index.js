@@ -1,28 +1,21 @@
-import React from 'react';
-import RPT from 'prop-types';
-import styles from './style.sass';
+import React from "react";
+import RPT from "prop-types";
+import styles from "./style.sass";
 
-const InputElement = ({ label, hint, ...props }) => (
+const InputElement = ({ label, hint, tag: Element = "input", ...props }) => (
   <label className={styles.container}>
-    {label &&
-      <div className={styles.label}>
-        {label}
-      </div>
-    }
+    {label && <div className={styles.label}>{label}</div>}
     <div>
-      <input className={styles.input} {...props} />
+      <Element className={styles.input} {...props} />
     </div>
-    {hint &&
-      <div className={styles.hint}>
-        {hint}
-      </div>
-    }
+    {hint && <div className={styles.hint}>{hint}</div>}
   </label>
 );
 
 InputElement.propTypes = {
   label: RPT.node,
   hint: RPT.node,
+  tag: RPT.oneOf(["input", "textarea"])
 };
 
 export default InputElement;

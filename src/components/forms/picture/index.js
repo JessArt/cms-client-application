@@ -220,6 +220,7 @@ class PictureForm extends Component {
           value={tagValue}
         />
         <Input
+          tag={"textarea"}
           name={"description"}
           label={"Description"}
           defaultValue={picture.description}
