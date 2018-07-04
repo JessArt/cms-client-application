@@ -13,6 +13,9 @@ const MenuUIElement = () => (
       <Link className={styles.elem} to={routes.articles}>
         {"Articles"}
       </Link>
+      <Link className={styles.elem} to={routes.tags}>
+        {"Tags"}
+      </Link>
     </ContainerLayout>
   </div>
 );
