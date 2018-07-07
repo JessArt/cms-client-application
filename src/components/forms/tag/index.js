@@ -55,10 +55,25 @@ class TagForm extends Component {
     this.setState({ cover: event.target.value });
   };
 
+  getParams() {
+    const {
+      params,
+      tag: { id }
+    } = this.props;
+
+    if (!params.tags) {
+      return Object.assign({}, params, {
+        tags: [id]
+      });
+    }
+
+    return params;
+  }
+
   renderModal() {
-    const { params } = this.props;
     const { isModalOpen } = this.state;
     const self = this;
+
     function PictureComponent({ picture }) {
       return (
         <div
@@ -77,7 +92,10 @@ class TagForm extends Component {
         onRequestClose={() => this.setState({ isModalOpen: false })}
         contentLabel="Example Modal"
       >
-        <Pictures params={params} PictureComponent={PictureComponent} />
+        <Pictures
+          params={this.getParams()}
+          PictureComponent={PictureComponent}
+        />
       </Modal>
     );
   }
