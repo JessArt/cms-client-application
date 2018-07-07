@@ -78,7 +78,16 @@ class TagForm extends Component {
       return (
         <div
           onClick={() =>
-            self.setState({ cover: picture.small_url, isModalOpen: false })
+            self.setState(
+              { cover: picture.small_url, isModalOpen: false },
+              () => {
+                // we'll get info from DOM about tag, so just to stay
+                // on the safe side, we wait 10ms, so input is rerendered
+                setTimeout(() => {
+                  self.saveTag(new FormData(self.form));
+                }, 10);
+              }
+            )
           }
         >
           <img src={picture.small_url} style={{ height: "150px" }} />
@@ -104,7 +113,11 @@ class TagForm extends Component {
     const { cover } = this.state;
     const { tag, tags, isPending } = this.props;
     return (
-      <Form name={"tag_form"} onSubmit={this.saveTag}>
+      <Form
+        refFn={node => (this.form = node)}
+        name={"tag_form"}
+        onSubmit={this.saveTag}
+      >
         <Input name={"name"} defaultValue={tag.name} label={tag.name} />
         <div>{"Contains subcategories:"}</div>
         <ComplexSelect
