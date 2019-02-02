@@ -5,6 +5,7 @@ import "medium-editor/dist/css/themes/default.css";
 import { connect } from "react-redux";
 import { actions } from "../../../store";
 import { readFile } from "../../../utils/files";
+import { resizeInCanvas } from "../../../utils/resize";
 import styles from "./style.sass";
 import progressStyles from "./progress.sass";
 
@@ -31,28 +32,6 @@ function createProgressBar() {
   container.appendChild(innerSpan);
 
   return container;
-}
-
-function loadImage(url) {
-  return new Promise(res => {
-    const img = new Image();
-    img.onload = () => res(img);
-    img.src = url;
-  });
-}
-
-async function resizeInCanvas(imgURL) {
-  const img = await loadImage(imgURL);
-  const perferedWidth = 2400;
-  const ratio = perferedWidth / img.width;
-  const canvas = document.createElement("canvas");
-  canvas.width = img.width * ratio;
-  canvas.height = img.height * ratio;
-  const ctx = canvas.getContext("2d");
-  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-  return new Promise(res => {
-    canvas.toBlob(blob => res(blob), "image/jpeg", 1);
-  });
 }
 
 class Editor extends Component {

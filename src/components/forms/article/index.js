@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import Button from "../../elements/button";
 import Form from "../../elements/form";
 import Input from "../../elements/input";
+import ImageSelector from "../../elements/imageSelector";
 import Editor from "../../elements/medium-editor";
 import CountrySelect from "./countrySelect";
 import FixedControls from "../../ui/fixedControls";
@@ -80,21 +81,20 @@ class ArticleForm extends React.Component {
 
     const status = publishedOn ? "published" : "draft";
 
-    const publishArticle = id &&
-      !publishedOn && (
-        <ConfirmationModal
-          onConfirm={this.publishArticle}
-          text={
-            "You are about to publish the article, it will make it appear on jess.gallery"
-          }
-        >
-          {({ open }) => (
-            <Button style={"danger"} onClick={open}>
-              {"Publish article"}
-            </Button>
-          )}
-        </ConfirmationModal>
-      );
+    const publishArticle = id && !publishedOn && (
+      <ConfirmationModal
+        onConfirm={this.publishArticle}
+        text={
+          "You are about to publish the article, it will make it appear on jess.gallery"
+        }
+      >
+        {({ open }) => (
+          <Button style={"danger"} onClick={open}>
+            {"Publish article"}
+          </Button>
+        )}
+      </ConfirmationModal>
+    );
 
     const unpublishArticle = publishedOn && (
       <ConfirmationModal
@@ -144,8 +144,7 @@ class ArticleForm extends React.Component {
       country,
       published_on,
       city
-    } =
-      article || {};
+    } = article || {};
     const submitFn = form => {
       form.append("published_on", published_on);
       saveArticle({ form, id });
@@ -213,13 +212,7 @@ class ArticleForm extends React.Component {
         <CountrySelect value={country} />
         {metaDescriptionInput}
         {keywordsInput}
-        <Input
-          label={"Cover"}
-          name={"cover"}
-          type={"text"}
-          hint={"please, paste link to the 1200px version from the website"}
-          defaultValue={cover}
-        />
+        <ImageSelector label={"Cover"} name={"cover"} defaultValue={cover} />
         <Input label={"City"} name={"city"} type={"text"} defaultValue={city} />
         <Editor
           name={"text"}
