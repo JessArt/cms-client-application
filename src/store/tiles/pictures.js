@@ -65,6 +65,48 @@ export const uploadPicture = createTile({
   }
 });
 
+export const uploadGIF = createTile({
+  type: ["api", "uploadGIF"],
+  fn: ({
+    api,
+    params: { form, cb },
+    dispatch,
+    actions,
+    selectors,
+    getState
+  }) => {
+    dispatch(
+      actions.ui.notifications.add({
+        id: "paste_gif",
+        type: "warning",
+        message: "Started to upload a GIF..."
+      })
+    );
+    const token = selectors.auth.status(getState());
+    return api
+      .post(`/v1/images/upload_gif?token=${token}`, form)
+      .then(data => {
+        cb(data);
+        dispatch(
+          actions.ui.notifications.add({
+            id: "paste_gif",
+            type: "success",
+            message: "GIF was uploaded successfully!"
+          })
+        );
+      })
+      .catch(() => {
+        dispatch(
+          actions.ui.notifications.add({
+            id: "paste_gif",
+            type: "error",
+            message: "Error happened during GIF uploading :("
+          })
+        );
+      });
+  }
+});
+
 const getPictureId = ({ id, fakeId }) => id || fakeId || "default";
 
 export const savePicture = createTile({
@@ -149,6 +191,7 @@ export default [
   picture,
   pictures,
   uploadPicture,
+  uploadGIF,
   savePicture,
   deletePicture,
   deletePictureWithRedirect,

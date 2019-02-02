@@ -9,7 +9,8 @@ import styles from "./style.sass";
 import progressStyles from "./progress.sass";
 
 const mapDispatchToProps = {
-  uploadPicture: actions.api.uploadPicture
+  uploadPicture: actions.api.uploadPicture,
+  uploadGIF: actions.api.uploadGIF
 };
 
 function insertImage({ e, url }) {
@@ -56,7 +57,7 @@ async function resizeInCanvas(imgURL) {
 
 class Editor extends Component {
   componentDidMount() {
-    const { uploadPicture } = this.props;
+    const { uploadPicture, uploadGIF } = this.props;
     const editor = new MediumEditor(this._container, {
       paste: {
         forcePlainText: false
@@ -87,41 +88,61 @@ class Editor extends Component {
       for (const index in items) {
         const item = items[index];
         if (item.kind === "file") {
-          filesArray.push(item.getAsFile());
+          filesArray.push({
+            blob: item.getAsFile(),
+            type: item.type === "image/gif" ? "gif" : "image"
+          });
         }
       }
 
       filesArray.reduce(
-        (promise, blob) =>
+        (promise, { blob, type }) =>
           promise.then(async () => {
-            const { url: originalImageUrl } = await readFile(blob);
-            const smallFile = await resizeInCanvas(originalImageUrl);
+            if (type === "image") {
+              const { url: originalImageUrl } = await readFile(blob);
+              const smallFile = await resizeInCanvas(originalImageUrl);
 
-            const form = new FormData();
-            form.append("image", smallFile);
+              const form = new FormData();
+              form.append("image", smallFile);
 
-            const progress = createProgressBar();
-            e.target.parentNode.insertBefore(
-              progress,
-              e.target.nextElementSibling
-            );
+              const progress = createProgressBar();
+              e.target.parentNode.insertBefore(
+                progress,
+                e.target.nextElementSibling
+              );
 
-            uploadPicture({
-              form,
-              cb: ({ url }) => {
-                const img = document.createElement("img");
-                img.setAttribute("src", url);
-                progress.parentElement.replaceChild(img, progress);
-              }
-            });
+              uploadPicture({
+                form,
+                cb: ({ url }) => {
+                  const img = document.createElement("img");
+                  img.setAttribute("src", url);
+                  progress.parentElement.replaceChild(img, progress);
+                }
+              });
+            } else if (type === "gif") {
+              const progress = createProgressBar();
+              e.target.parentNode.insertBefore(
+                progress,
+                e.target.nextElementSibling
+              );
+              const form = new FormData();
+              form.append("gif", blob);
+              uploadGIF({
+                form,
+                cb: ({ url }) => {
+                  const img = document.createElement("img");
+                  img.setAttribute("src", url);
+                  img.setAttribute("data-type", "gif");
+                  progress.parentElement.replaceChild(img, progress);
+                }
+              });
+            }
           }),
         Promise.resolve()
       );
     });
 
     editor.subscribe("editableDrop", async function(event) {
-      const srcElement = event.srcElement;
-
       var dt = event.dataTransfer;
       var items = dt.items;
 
@@ -130,12 +151,15 @@ class Editor extends Component {
       for (const index in items) {
         const item = items[index];
         if (item.kind === "file") {
-          filesArray.push(item.getAsFile());
+          filesArray.push({
+            blob: item.getAsFile(),
+            type: item.type === "image/gif" ? "gif" : "image"
+          });
         }
       }
 
       const images = await Promise.all(
-        filesArray.map(blob =>
+        filesArray.map(({ blob, type }) =>
           readFile(blob).then(({ url: originalImageUrl }) => {
             const img = document.querySelectorAll(
               `[src="${originalImageUrl}"]`
@@ -146,12 +170,12 @@ class Editor extends Component {
               imgElement.style.display = "none";
             }
 
-            return { originalImageUrl, imgElement };
+            return { originalImageUrl, imgElement, type, blob };
           })
         )
       );
 
-      images.reduce((promise, { originalImageUrl, imgElement }) => {
+      images.reduce((promise, { originalImageUrl, imgElement, type, blob }) => {
         return promise.then(async () => {
           const progress = createProgressBar();
 
@@ -160,26 +184,39 @@ class Editor extends Component {
             imgElement.style.display = "none";
           }
 
-          const smallFile = await resizeInCanvas(originalImageUrl);
+          if (type === "image") {
+            const smallFile = await resizeInCanvas(originalImageUrl);
 
-          const form = new FormData();
-          form.append("image", smallFile);
+            const form = new FormData();
+            form.append("image", smallFile);
 
-          await uploadPicture({
-            form,
-            cb: ({ url }) => {
-              const img = document.querySelectorAll(
-                `[src="${originalImageUrl}"]`
-              );
+            await uploadPicture({
+              form,
+              cb: ({ url }) => {
+                progress.parentElement.removeChild(progress);
 
-              progress.parentElement.removeChild(progress);
-
-              if (imgElement) {
-                imgElement.style.display = "";
-                imgElement.src = url;
+                if (imgElement) {
+                  imgElement.style.display = "";
+                  imgElement.src = url;
+                }
               }
-            }
-          });
+            });
+          } else if (type === "gif") {
+            const form = new FormData();
+            form.append("gif", blob);
+            await uploadGIF({
+              form,
+              cb: ({ url }) => {
+                progress.parentElement.removeChild(progress);
+
+                if (imgElement) {
+                  imgElement.style.display = "";
+                  imgElement.setAttribute("data-type", "gif");
+                  imgElement.src = url;
+                }
+              }
+            });
+          }
         });
       }, Promise.resolve());
     });
@@ -203,4 +240,7 @@ class Editor extends Component {
   }
 }
 
-export default connect(null, mapDispatchToProps)(Editor);
+export default connect(
+  null,
+  mapDispatchToProps
+)(Editor);
