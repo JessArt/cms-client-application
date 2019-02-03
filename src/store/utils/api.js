@@ -43,14 +43,18 @@ export function get(url, parameters) {
 export function post(url, form) {
   const processedURL = processURL(url);
   const isForm = form instanceof FormData;
-  return fetch(processedURL, {
+  const opts = {
     method: "POST",
     headers: {
-      Accept: "application/json",
-      "Content-Type": isForm ? "" : "application/json"
+      Accept: "application/json"
     },
     body: isForm ? form : JSON.stringify(form)
-  })
+  };
+
+  if (!isForm) {
+    opts.headers["Content-Type"] = "application/json";
+  }
+  return fetch(processedURL, opts)
     .then(checkStatus)
     .then(parseJSON);
 }

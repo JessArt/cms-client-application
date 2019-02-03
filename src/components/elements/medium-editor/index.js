@@ -137,6 +137,9 @@ class Editor extends Component {
         }
       }
 
+      // wait .5 second, so that editor can render all dropped images
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       const images = await Promise.all(
         filesArray.map(({ blob, type }) =>
           readFile(blob).then(({ url: originalImageUrl }) => {
@@ -177,10 +180,22 @@ class Editor extends Component {
                 if (imgElement) {
                   imgElement.style.display = "";
                   imgElement.src = url;
+                } else {
+                  // try to find this element once again
+                  const img = document.querySelectorAll(
+                    `[src="${originalImageUrl}"]`
+                  );
+
+                  const foundImgElement = img && img[0];
+
+                  if (foundImgElement) {
+                    foundImgElement.src = url;
+                  }
                 }
               }
             });
           } else if (type === "gif") {
+            console.log(blob);
             const form = new FormData();
             form.append("gif", blob);
             await uploadGIF({
@@ -192,6 +207,18 @@ class Editor extends Component {
                   imgElement.style.display = "";
                   imgElement.setAttribute("data-type", "gif");
                   imgElement.src = url;
+                } else {
+                  // try to find this element once again
+                  const img = document.querySelectorAll(
+                    `[src="${originalImageUrl}"]`
+                  );
+
+                  const foundImgElement = img && img[0];
+
+                  if (foundImgElement) {
+                    foundImgElement.setAttribute("data-type", "gif");
+                    foundImgElement.src = url;
+                  }
                 }
               }
             });
