@@ -54,7 +54,12 @@ class PictureForm extends Component {
   };
 
   state = {
-    url: null
+    url: null,
+    expanded: false
+  };
+
+  toggleExpanded = () => {
+    this.setState(state => ({ expanded: !state.expanded }));
   };
 
   submitForm = form => {
@@ -78,15 +83,27 @@ class PictureForm extends Component {
   };
 
   renderImage() {
-    const { url } = this.state;
+    const { url, expanded } = this.state;
     const { picture, small } = this.props;
 
     if (url) {
-      return <img className={styles.bigImage} src={url} />;
+      return (
+        <img
+          onClick={this.toggleExpanded}
+          className={`${styles.bigImage} ${expanded ? styles.expanded : ""}`}
+          src={url}
+        />
+      );
     }
 
-    if (picture.small_url) {
-      return <img className={styles.bigImage} src={picture.small_url} />;
+    if (picture.small_url || picture.big_url) {
+      return (
+        <img
+          onClick={this.toggleExpanded}
+          className={`${styles.bigImage} ${expanded ? styles.expanded : ""}`}
+          src={expanded ? picture.big_url : picture.small_url}
+        />
+      );
     }
 
     if (small) {
@@ -196,6 +213,12 @@ class PictureForm extends Component {
           name={"title"}
           defaultValue={picture.title}
         />
+        <h3
+          className={styles.label}
+          style={{ display: "inline-block", marginRight: "15px" }}
+        >
+          {"Picture type"}
+        </h3>
         <Select name={"type"} value={picture.type}>
           <Option id={"photo"} value={"photo"}>
             Photo
@@ -213,12 +236,14 @@ class PictureForm extends Component {
             Other (will not appear anywhere)
           </Option>
         </Select>
+        <h3 className={styles.label}>{"Tags"}</h3>
         <ComplexSelect
           multiple
           name={"tags"}
           options={tagOptions}
           value={tagValue}
         />
+        <div style={{ marginTop: "25px" }} />
         <Input
           tag={"textarea"}
           name={"description"}

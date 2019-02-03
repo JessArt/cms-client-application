@@ -6,6 +6,14 @@
   width: 100%
   display: block
   margin: 0 auto 20px
+  cursor: zoom-in
+
+  &.expanded
+    max-width: 1200px
+    width: 1200px
+    position: relative
+    left: calc(50vw - 1200px)
+    cursor: zoom-out
 
 .externalContainer
   text-align: center
@@ -39,3 +47,8 @@
 .buttonWrapper
   display: inline-block
   margin: 0 10px
+
+.label
+  font-size: 120%
+  margin-bottom: 10px
+  font-weight: 700
