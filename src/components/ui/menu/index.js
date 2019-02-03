@@ -7,6 +7,9 @@ import styles from "./style.sass";
 const MenuUIElement = () => (
   <div className={styles.container}>
     <ContainerLayout>
+      <Link className={styles.elem} to={routes.slider}>
+        {"Slider"}
+      </Link>
       <Link className={styles.elem} to={`${routes.pictures}?type=photo`}>
         {"Pictures"}
       </Link>

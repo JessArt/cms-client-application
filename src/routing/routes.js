@@ -2,6 +2,7 @@ export default {
   login: "/login",
   home: "/",
   bulk: "/bulk",
+  slider: "/slider",
   bulkEditing: "/bulk/editing",
   tags: "/tags",
   pictures: "/pictures",

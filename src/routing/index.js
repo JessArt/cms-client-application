@@ -14,12 +14,14 @@ import Article from "../components/pages/article";
 import NoMatch from "../components/pages/page404";
 import Bulk from "../components/pages/bulk";
 import Tags from "../components/pages/tags";
+import Slider from "../components/pages/slider";
 import BulkEditing from "../components/pages/bulkEditing";
 
 export const Component = () => (
   <Router history={history}>
     <ApplicationLayout>
       <Switch>
+        <PrivateRoute path={routes.slider} exact component={Slider} />
         <PrivateRoute path={routes.home} exact component={Home} />
         <PrivateRoute path={routes.pictures} exact component={Pictures} />
         <PrivateRoute path={routes.picture} exact component={Picture} />
