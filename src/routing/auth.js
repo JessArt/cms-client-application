@@ -61,8 +61,8 @@ const PrivateRoute = ({ component: Component, isAuthenticated, ...rest }) => (
 );
 
 PrivateRoute.propTypes = {
-  component: RPT.element,
-  isAuthenticated: RPT.bool
+  component: RPT.oneOfType([RPT.string, RPT.func]),
+  isAuthenticated: RPT.oneOfType([RPT.bool, RPT.string])
 };
 
 export default connect(mapStateToProps)(PrivateRoute);

@@ -1,8 +1,8 @@
-import React from 'react';
-import RPT from 'prop-types';
+import React from "react";
+import RPT from "prop-types";
 
-const SelectElement = ({ children, name }) => (
-  <select name={name}>
+const SelectElement = ({ value, children, name }) => (
+  <select name={name} defaultValue={value}>
     {children}
   </select>
 );
@@ -10,6 +10,7 @@ const SelectElement = ({ children, name }) => (
 SelectElement.propTypes = {
   children: RPT.node,
   name: RPT.string,
+  value: RPT.string
 };
 
 export default SelectElement;

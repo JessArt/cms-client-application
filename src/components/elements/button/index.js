@@ -6,6 +6,7 @@ import styles from "./style.sass";
 const ButtonElement = ({
   to,
   type,
+  flavour,
   children,
   className = "",
   loading,
@@ -37,8 +38,10 @@ const ButtonElement = ({
 
   return (
     <Element
-      className={`${styles.button} ${style ? styles[style] : ""} ${className ||
-        ""}`}
+      style={style}
+      className={`${styles.button} ${
+        flavour ? styles[flavour] : ""
+      } ${className || ""}`}
       {...buttonProps}
     >
       {loading ? "processing..." : children}
@@ -53,7 +56,8 @@ ButtonElement.propTypes = {
   loading: RPT.bool,
   to: RPT.string,
   className: RPT.string,
-  style: RPT.oneOf(["danger"])
+  flavour: RPT.oneOf(["danger"]),
+  style: RPT.any
 };
 
 ButtonElement.defaultProps = {

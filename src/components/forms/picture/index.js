@@ -124,7 +124,7 @@ class PictureForm extends Component {
         text={`You are about to delete an image: ${picture.title}`}
       >
         {({ open }) => (
-          <Button style={"danger"} loading={false} onClick={open}>
+          <Button flavour={"danger"} loading={false} onClick={open}>
             {"Delete"}
           </Button>
         )}
@@ -196,20 +196,20 @@ class PictureForm extends Component {
           name={"title"}
           defaultValue={picture.title}
         />
-        <Select name={"type"}>
-          <Option id={"photo"} selected={picture.type === "photo"}>
+        <Select name={"type"} value={picture.type}>
+          <Option id={"photo"} value={"photo"}>
             Photo
           </Option>
-          <Option id={"art"} selected={picture.type === "art"}>
+          <Option id={"art"} value={"art"}>
             Art
           </Option>
-          <Option id={"craft"} selected={picture.type === "craft"}>
+          <Option id={"craft"} value={"craft"}>
             Craft
           </Option>
-          <Option id={"postcard"} selected={picture.type === "postcard"}>
+          <Option id={"postcard"} value={"postcard"}>
             postcards
           </Option>
-          <Option id={"other"} selected={picture.type === "other"}>
+          <Option id={"other"} value={"other"}>
             Other (will not appear anywhere)
           </Option>
         </Select>

@@ -112,13 +112,26 @@ class TagForm extends Component {
   render() {
     const { cover } = this.state;
     const { tag, tags, isPending } = this.props;
+    const nameLabel = (
+      <div>
+        {tag.name}{" "}
+        <a
+          style={{ opacity: 0.7, fontSize: "80%" }}
+          href={`https://jess.gallery/photo?tag=${tag.id}`}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          {"link"}
+        </a>
+      </div>
+    );
     return (
       <Form
         refFn={node => (this.form = node)}
         name={"tag_form"}
         onSubmit={this.saveTag}
       >
-        <Input name={"name"} defaultValue={tag.name} label={tag.name} />
+        <Input name={"name"} defaultValue={tag.name} label={nameLabel} />
         <div>{"Contains subcategories:"}</div>
         <ComplexSelect
           multiple
@@ -127,18 +140,25 @@ class TagForm extends Component {
           value={tag.relatedTags}
         />
         {this.renderModal()}
+        <div style={{ marginTop: "15px" }} />
+        <Input
+          onChange={this.handleChange}
+          name={"cover"}
+          label={"Cover image"}
+          value={cover}
+        />
         <Button
-          style={{ padding: "5px", fontSize: "80%" }}
+          style={{
+            display: "block",
+            marginTop: "-10px",
+            marginBottom: "15px",
+            padding: "5px",
+            fontSize: "80%"
+          }}
           onClick={() => this.setState({ isModalOpen: true })}
         >
           {"Choose from picture"}
         </Button>
-        <Input
-          onChange={this.handleChange}
-          name={"cover"}
-          label={"Image"}
-          value={cover}
-        />
         {cover && <img src={cover} style={{ width: "100%" }} />}
         <Button loading={isPending} type={"submit"}>
           {"Save tag"}

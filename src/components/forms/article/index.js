@@ -89,7 +89,7 @@ class ArticleForm extends React.Component {
         }
       >
         {({ open }) => (
-          <Button style={"danger"} onClick={open}>
+          <Button flavour={"danger"} onClick={open}>
             {"Publish article"}
           </Button>
         )}
@@ -104,7 +104,7 @@ class ArticleForm extends React.Component {
         }
       >
         {({ open }) => (
-          <Button style={"danger"} onClick={open}>
+          <Button flavour={"danger"} onClick={open}>
             {"Unpublish article"}
           </Button>
         )}

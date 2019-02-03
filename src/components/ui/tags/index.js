@@ -35,7 +35,6 @@ class Tags extends Component {
     topPhotoTags: RPT.array,
     topArtTags: RPT.array,
     isPending: RPT.bool,
-    fetch: RPT.props,
     params: RPT.object,
     error: RPT.object,
 
@@ -81,14 +80,34 @@ class Tags extends Component {
 
     const topArtTagsMarkup = (
       <div className={styles.tagContainer}>
-        <h3 className={styles.tagTitle}>{"Top Art categories"}</h3>
+        <h3 className={styles.tagTitle}>
+          {"Top Art categories"}{" "}
+          <a
+            style={{ opacity: 0.7, fontSize: "80%" }}
+            href={"https://jess.gallery/paint"}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            {"link"}
+          </a>
+        </h3>
         <TopTagsForm tags={tagsForSelect} type={"art"} topTags={topArtTags} />
       </div>
     );
 
     const topPhotoTagsMarkup = (
       <div className={styles.tagContainer}>
-        <h3 className={styles.tagTitle}>{"Top Photo categories"}</h3>
+        <h3 className={styles.tagTitle}>
+          {"Top Photo categories"}{" "}
+          <a
+            style={{ opacity: 0.7, fontSize: "80%" }}
+            href={"https://jess.gallery/photo"}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            {"link"}
+          </a>
+        </h3>
         <TopTagsForm
           tags={tagsForSelect}
           type={"photo"}

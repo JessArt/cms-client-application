@@ -212,9 +212,8 @@ class Editor extends Component {
         name={name}
         className={styles.container}
         ref={node => (this._container = node)}
-      >
-        {html}
-      </textarea>
+        defaultValue={html}
+      />
     );
   }
 }
