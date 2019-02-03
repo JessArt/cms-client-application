@@ -1,13 +1,39 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
+
 import Form from "../../elements/form";
 import ImageSelector from "../../elements/imageSelector";
 import Button from "../../elements/button";
 
+import { actions, selectors } from "../../../store";
+
 import styles from "./style.sass";
 
-export default class SliderForm extends Component {
+const mapStateToProps = state => {
+  const { isPending } = selectors.api.updateSliderImages(state);
+  return {
+    isPending
+  };
+};
+
+const mapDispatchToProps = {
+  updateSliderImages: actions.api.updateSliderImages
+};
+
+class SliderForm extends Component {
   state = {
-    selectors: [{ url: "" }]
+    selectors: (this.props.data || []).map(url => ({ url }))
+  };
+
+  onSubmit = () => {
+    const { selectors } = this.state;
+    const { updateSliderImages } = this.props;
+
+    const images = selectors.map(({ url }) => url);
+
+    updateSliderImages({
+      images
+    });
   };
 
   addImage = () => {
@@ -64,7 +90,7 @@ export default class SliderForm extends Component {
       .filter(url => url || url.includes("//"));
 
     return (
-      <Form name="slider_form">
+      <Form name="slider_form" onSubmit={this.onSubmit}>
         {imageSelectors}
         <Button className={styles.addMore} onClick={this.addImage}>
           + Add one more image
@@ -72,7 +98,7 @@ export default class SliderForm extends Component {
         <Button loading={false} type={"submit"}>
           {"Update slider"}
         </Button>
-        {validURLs && (
+        {Boolean(validURLs.length) && (
           <div>
             <h3>Images:</h3>
             {validURLs.map(url => (
@@ -84,3 +110,8 @@ export default class SliderForm extends Component {
     );
   }
 }
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SliderForm);

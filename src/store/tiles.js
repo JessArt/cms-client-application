@@ -4,6 +4,7 @@ import articleTiles from "./tiles/articles";
 import tagsTiles from "./tiles/tags";
 import uiTiles from "./tiles/ui";
 import bulkTiles from "./tiles/bulk";
+import sliderImagesTiles from "./tiles/sliderImages";
 
 export default [
   ...authTiles,
@@ -11,5 +12,6 @@ export default [
   ...articleTiles,
   ...tagsTiles,
   ...uiTiles,
-  ...bulkTiles
+  ...bulkTiles,
+  ...sliderImagesTiles
 ];

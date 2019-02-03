@@ -42,12 +42,14 @@ export function get(url, parameters) {
 
 export function post(url, form) {
   const processedURL = processURL(url);
+  const isForm = form instanceof FormData;
   return fetch(processedURL, {
     method: "POST",
     headers: {
-      Accept: "application/json"
+      Accept: "application/json",
+      "Content-Type": isForm ? "" : "application/json"
     },
-    body: form
+    body: isForm ? form : JSON.stringify(form)
   })
     .then(checkStatus)
     .then(parseJSON);

@@ -26,7 +26,12 @@ const ImagesPage = ({ location: { search }, chooseFiles }) => {
       <FixedControls>
         <div className={styles.controls}>
           <BulkEditingControls />
-          <Input onChange={onChange} type={"file"} multiple />
+          <Input
+            onChange={onChange}
+            accept=".jpg,.png"
+            type={"file"}
+            multiple
+          />
         </div>
       </FixedControls>
     </ContainerLayout>
@@ -40,4 +45,7 @@ ImagesPage.propTypes = {
   chooseFiles: RPT.func
 };
 
-export default connect(null, mapDispatchToProps)(ImagesPage);
+export default connect(
+  null,
+  mapDispatchToProps
+)(ImagesPage);
