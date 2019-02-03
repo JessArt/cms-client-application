@@ -20,7 +20,13 @@ class SliderImages extends React.Component {
     this.props.fetchSliderImages();
   };
   renderContent() {
-    const { fetched, data, error, isPending } = this.props;
+    const {
+      fetched,
+      data,
+      error,
+      isPending,
+      location: { search }
+    } = this.props;
 
     if (error) {
       return (
@@ -37,7 +43,7 @@ class SliderImages extends React.Component {
     }
 
     if (fetched) {
-      return <SliderForm data={data} />;
+      return <SliderForm search={search} data={data} />;
     }
 
     return null;

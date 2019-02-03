@@ -42,11 +42,7 @@ class ImageSelector extends React.Component {
     }
   };
   renderModal() {
-    const {
-      name,
-      onChange,
-      location: { search }
-    } = this.props;
+    const { name, onChange, location, search } = this.props;
     const { isModalOpen } = this.state;
     const self = this;
 
@@ -77,7 +73,10 @@ class ImageSelector extends React.Component {
         onRequestClose={() => this.setState({ isModalOpen: false })}
         contentLabel="Example Modal"
       >
-        <Pictures params={parse(search)} PictureComponent={PictureComponent} />
+        <Pictures
+          params={parse(search || location.search)}
+          PictureComponent={PictureComponent}
+        />
       </Modal>
     );
   }

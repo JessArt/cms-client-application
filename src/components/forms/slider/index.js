@@ -44,11 +44,13 @@ class SliderForm extends Component {
 
   render() {
     const { selectors } = this.state;
+    const { search } = this.props;
 
     const imageSelectors = selectors.map((selector, i) => {
       return (
         <div key={i} className={styles.imageContainer}>
           <ImageSelector
+            search={search}
             onChange={newValue => {
               this.setState(state => {
                 const newSelectors = state.selectors.map(selectorItem => {
