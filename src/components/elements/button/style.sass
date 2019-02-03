@@ -14,7 +14,7 @@
   line-height: 1.33
   border-radius: 6px
   background-color: lighten(#3071a9, 35%)
-  transition: background-color 0.2s, color 0.2s
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s
 
   &:hover
     color: #fff
@@ -25,4 +25,9 @@
     cursor: progress
 
   &.danger
-    background-color: lighten(#f00, 10%)
+    background-color: #e3342f
+    color: #fff
+
+    &:hover
+      background-color: darken(#e3342f, 10%)
+      border-color: #e3342f
